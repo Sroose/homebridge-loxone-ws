@@ -12,6 +12,11 @@ The plugin will automatically retrieve and communicate with all these items from
 
 The only configuration needed is the credentials to your Loxone miniserver.
 
+### Benefits
+
+* Realtime and very fast 2-way updates by using the websocket connection
+* One-touch deployment through automatic import of Loxone controls
+
 ### Prerequisites
 [Homebridge](https://github.com/nfarina/homebridge)
 Follow all the installation steps there.
