@@ -94,8 +94,10 @@ The plugin is released under MIT license, which means you can do whatever you wa
 
 Credits
 ----
-Attribution goes towards Tommaso Marchionni. The structure of the code is based on his [openHAB plugin](https://github.com/tommasomarchionni/homebridge-openHAB).
+Attribution goes towards [Tommaso Marchionni](https://github.com/tommasomarchionni). The structure of this code is based on his [openHAB plugin](https://github.com/tommasomarchionni/homebridge-openHAB).
 
-The original HomeKit API work was done by [KhaosT](http://twitter.com/khaost) in his [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS) project.
+The original HomeKit API work was done by [Khaos Tian](https://github.com/KhaosT) in his [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS) project.
 
 The [homebridge](https://github.com/nfarina/homebridge) component on which this plugin is built was created by [Nick Farina](https://github.com/nfarina).
+
+I've made use of the [NodeJS Loxone websocket API](https://github.com/alladdin/node-lox-ws-api) created by [Ladislav Dokulil](https://github.com/alladdin)
