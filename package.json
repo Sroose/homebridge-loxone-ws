@@ -1,0 +1,33 @@
+{
+  "name": "homebridge-loxone-ws",
+  "version": "1.0.0",
+  "description": "Websocket based Loxone plugin for homebridge (https://github.com/nfarina/homebridge)",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sroose/homebridge-loxone-ws.git"
+  },
+  "keywords": [
+    "Loxone",
+    "homebridge",
+    "homebridge-plugin",
+    "Siri",
+    "HomeKit",
+    "iOS"
+  ],
+  "author": "Sam Roose",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sroose/homebridge-loxone-ws/issues"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "dependencies": {
+    "node-lox-ws-api": "^0.2.0",
+    "request": "^2.78.0",
+    "ws": "^1.1.1"
+  },
+  "homepage": "https://github.com/Sroose/homebridge-loxone-ws#readme"
+}
