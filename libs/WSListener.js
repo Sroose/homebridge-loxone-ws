@@ -65,10 +65,31 @@ WSListener.prototype.startListener = function () {
         //self.log("LOXONE WS: message file " + message);
     });
 
-    this.ws.on('update_event', function(uuid, message) {
-       //self.log("LOXONE WS: update " + uuid + ":" + message);
+    this.ws.on('update_event_value', function(uuid, message) {
+        //self.log("LOXONE WS: update value " + uuid + ":" + message);
         if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-           // self.log("FOUND LSITENER FOR THIS ITEM, CALLING BACK");
+            // self.log("FOUND LSITENER FOR THIS ITEM, CALLING BACK");
+            self.uuidCallbacks[uuid](message);
+        }
+    });
+
+    this.ws.on('update_event_text', function(uuid, message) {
+        //self.log("LOXONE WS: update event text " + uuid + ":" + message);
+        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
+            self.uuidCallbacks[uuid](message);
+        }
+    });
+
+    this.ws.on('update_event_daytimer', function(uuid, message) {
+        //self.log("LOXONE WS: update event timer " + uuid + ":" + message);
+        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
+            self.uuidCallbacks[uuid](message);
+        }
+    });
+
+    this.ws.on('update_event_weather', function(uuid, message) {
+        //self.log("LOXONE WS: update event weather " + uuid + ":" + message);
+        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
             self.uuidCallbacks[uuid](message);
         }
     });

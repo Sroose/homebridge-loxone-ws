@@ -25,7 +25,7 @@
     "homebridge": ">=0.2.0"
   },
   "dependencies": {
-    "node-lox-ws-api": "^0.2.0",
+    "node-lox-ws-api": "^0.2.3",
     "request": "^2.78.0",
     "ws": "^1.1.1"
   },
