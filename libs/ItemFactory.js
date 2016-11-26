@@ -88,6 +88,10 @@ exports.Factory.prototype.checkCustomAttrs = function(item,platform,catList) {
         }
     }
 
+    if (item.type == "EIBDimmer") {
+        item.type = "Dimmer"
+    }
+
     if(item.name.indexOf("Loxone") !== -1) {
         //this is a Loxone status or temperature, I don't need these in Siri
         item.skip = true;
