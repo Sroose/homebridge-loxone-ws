@@ -38,7 +38,7 @@ WSListener.prototype.startListener = function () {
     this.ws.on('connect_failed', function() {
         //throw new Error("LOXONE WS: connect failed");
         //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
-        setTimeout(function(){ this.ws.connect(); }, 10000);
+        setTimeout(function(){ self.ws.connect(); }, 10000);
     });
 
     this.ws.on('connection_error', function(error) {

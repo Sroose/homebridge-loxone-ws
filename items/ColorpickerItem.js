@@ -134,8 +134,8 @@ ColorItem.prototype.setItemPowerState = function(value, callback) {
         return;
     }
 
-    this.log("[color] iOS - send message to " + this.name + ": " + value);
-    var command = (this.power) ? 'On' : 'Off';
+    var command = (value) ? 'On' : 'Off';
+    this.log("[color] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 
