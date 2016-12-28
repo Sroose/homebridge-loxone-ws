@@ -53,7 +53,7 @@ Add the platform section to your Homebridge config.json (usually in ~/.homebridg
             "host": "192.168.1.2",
             "port": "12345",
             "username": "homebridge",
-            "password": "somepassword",
+            "password": "somepassword"
         }
     ]
 }
