@@ -41,21 +41,21 @@ exports.Factory.prototype.parseSitemap = function (jsonSitemap) {
     //now convert these controls in accesories
     var totalAccessories = 1;
     var accessoryList = [];
-    for (var key in this.itemList) {
+    for (var index = 0; index < this.itemList.length; index++) {
         //process additional attributes
-        this.itemList[key] = exports.Factory.prototype.checkCustomAttrs(this.itemList[key],this.platform, this.catList);
+        this.itemList[index] = exports.Factory.prototype.checkCustomAttrs(this.itemList[index],this.platform, this.catList);
 
-        if (!(this.itemList[key].type in exports)){
-            this.log("Platform - The widget '" + this.itemList[key].name + "' of type "+this.itemList[key].type+" is an item not handled.");
+        if (!(this.itemList[index].type in exports)){
+            this.log("Platform - The widget '" + this.itemList[index].name + "' of type "+this.itemList[index].type+" is an item not handled.");
             continue;
         }
-        if (this.itemList[key].skip) {
-            this.log("Platform - The widget '" + this.itemList[key].name + "' of type "+this.itemList[key].type+" was skipped.");
+        if (this.itemList[index].skip) {
+            this.log("Platform - The widget '" + this.itemList[index].name + "' of type "+this.itemList[index].type+" was skipped.");
             continue;
         }
 
-        var accessory = new exports[this.itemList[key].type](this.itemList[key], this.platform, this.homebridge);
-        this.log("Platform - Accessory Found: " + this.itemList[key].name);
+        var accessory = new exports[this.itemList[index].type](this.itemList[index], this.platform, this.homebridge);
+        this.log("Platform - Accessory Found: " + this.itemList[index].name + " | Type: " + this.itemList[index].type);
         totalAccessories += 1;
 
         if(totalAccessories > 100) {
@@ -123,17 +123,17 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap,factory) {
                 item = jsonSitmap[section][item];
                 //item is UUID: { ..iteminfo...} where iteminfo has name, room, cat, type, uuidAction and other info
                 if (typeof(item.name) !== 'undefined'){
-                    factory.itemList[item.name] = item;
-                    //console.log(item.name);
+                    factory.itemList.push(item);
+                    //console.log("Parsed item: " + item.name + " (" + item.uuidAction + ")");
                 }
                 //if this item has subcontrols (eg for LightController), do one more level
                  if (typeof(item.subControls !== 'undefined')){
                     for (var subitem in item.subControls) {
                         subitem = item.subControls[subitem];
-                        factory.itemList[subitem.name] = subitem;
                         //also keep track of the parent type, we can use this later to decide on this childs type
-                        factory.itemList[subitem.name].parentType = item.type;
-                        //console.log('  ' + subitem.name);
+                        subitem.parentType = item.type;
+                        factory.itemList.push(subitem);
+                        //console.log("Parsed sub item: " + subitem.name + " (" + subitem.uuidAction + ")");
                     }
                 }
             }
