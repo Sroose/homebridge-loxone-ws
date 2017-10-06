@@ -23,7 +23,7 @@ EventItem.prototype.callBack = function(value) {
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent)
         .setValue(value == '1');
-}
+};
 
 EventItem.prototype.getOtherServices = function() {
     var otherService = new this.homebridge.hap.Service.StatelessProgrammableSwitch();

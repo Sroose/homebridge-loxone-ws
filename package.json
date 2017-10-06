@@ -1,6 +1,6 @@
 {
   "name": "homebridge-loxone-ws",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Websocket based Loxone plugin for homebridge (https://github.com/nfarina/homebridge)",
   "main": "index.js",
   "repository": {
@@ -25,7 +25,7 @@
     "homebridge": ">=0.2.0"
   },
   "dependencies": {
-    "node-lox-ws-api": "^0.2.3",
+    "node-lox-ws-api": "^0.4.1",
     "request": "^2.78.0",
     "ws": "^1.1.1"
   },

@@ -24,7 +24,7 @@ TemperatureSensorItem.prototype.callBack = function(value) {
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
         .setValue(this.currentTemperature);
-}
+};
 
 TemperatureSensorItem.prototype.getOtherServices = function() {
     var otherService = new this.homebridge.hap.Service.TemperatureSensor();
