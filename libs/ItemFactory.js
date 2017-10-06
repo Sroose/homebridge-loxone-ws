@@ -76,19 +76,27 @@ exports.Factory.prototype.checkCustomAttrs = function(item,platform,catList) {
     if(item.name.startsWith('Temperat')) {
         item.type = "TemperatureSensor";
 
-    } else if(catList[item.cat] !== undefined && catList[item.cat].image == "00000000-0000-0002-2000000000000000.svg") {
+    } else if(catList[item.cat] !== undefined && catList[item.cat].image === "00000000-0000-0002-2000000000000000.svg") {
         //this is the lightbulb image, which means that this is a lightning control
-        if(item.type=="Switch") {
+        if(item.type === "Switch") {
             item.type = "Lightbulb";
         }
-    } else if(item.parentType == "LightController") {
+    } else if(item.parentType === "LightController" || item.parentType === "LightControllerV2") {
         //this is a subcontrol of a lightcontroller
-        if(item.type=="Switch") {
+        if(item.type === "Switch") {
             item.type = "Lightbulb";
+        } else if(item.type === "ColorPickerV2") { // Handle the new ColorPickerV2 which replaces the colorPicker in the new LightControllerV2
+            item.type = "Colorpicker";
+        }
+
+        // Support new LightControllerV2 masterValue and masterColor
+        // Controls ending with these strings are always subControls of a LightControllerV2
+        if (item.uuidAction.endsWith("masterValue") || item.uuidAction.endsWith("masterColor")) {
+            item.name += (" " + item.parentName);
         }
     }
 
-    if (item.type == "EIBDimmer") {
+    if (item.type === "EIBDimmer") {
         item.type = "Dimmer"
     }
 
@@ -100,7 +108,6 @@ exports.Factory.prototype.checkCustomAttrs = function(item,platform,catList) {
     item.manufacturer = "Loxone";
 
     return item;
-
 };
 
 
@@ -109,7 +116,7 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap,factory) {
     //this function will simply add every control and subcontrol to the itemList, holding all its information
     //it will also store category information, as we will use this to decide on correct Item Type
     for (var section in jsonSitmap) {
-        if(section=="cats") {
+        if (section === "cats") {
              for (var item in jsonSitmap[section]) {
                 item = jsonSitmap[section][item];
                 //item is UUID: { ..iteminfo...} where iteminfo has uuid, name, image and other info
@@ -118,21 +125,25 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap,factory) {
                 }
             }
         }
-        if(section=="controls") {
+        if (section === "controls") {
             for (var item in jsonSitmap[section]) {
                 item = jsonSitmap[section][item];
+                // Append the room name, it helps you identify the item.
+                item.name += (" " + jsonSitmap["rooms"][item.room].name);
                 //item is UUID: { ..iteminfo...} where iteminfo has name, room, cat, type, uuidAction and other info
                 if (typeof(item.name) !== 'undefined'){
                     factory.itemList[item.name] = item;
                     //console.log(item.name);
                 }
                 //if this item has subcontrols (eg for LightController), do one more level
-                 if (typeof(item.subControls !== 'undefined')){
+                if (typeof(item.subControls !== 'undefined')) {
                     for (var subitem in item.subControls) {
                         subitem = item.subControls[subitem];
+                        subitem.name += (" (" + item.name + ")");
                         factory.itemList[subitem.name] = subitem;
                         //also keep track of the parent type, we can use this later to decide on this childs type
                         factory.itemList[subitem.name].parentType = item.type;
+                        factory.itemList[subitem.name].parentName = item.name;
                         //console.log('  ' + subitem.name);
                     }
                 }

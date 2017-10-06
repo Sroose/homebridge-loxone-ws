@@ -31,12 +31,12 @@ PushbuttonItem.prototype.callBack = function(value) {
         );
     }.bind(this), 1000);
 
-}
+};
 
 PushbuttonItem.prototype.onCommand = function() {
     //override On command
     return 'Pulse';
-}
+};
 
 
 module.exports = PushbuttonItem;

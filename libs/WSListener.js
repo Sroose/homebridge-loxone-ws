@@ -13,7 +13,6 @@ var WSListener = function(platform) {
 
     this.uuidCallbacks = [];
     this.startListener();
-
 };
 
 WSListener.prototype.startListener = function () {
@@ -108,9 +107,10 @@ WSListener.prototype.registerListenerForUUID = function (uuid, callback) {
     //function that the Item classes will call to listen in on a specific UUID message
    // console.log("Registering listener for UUID " + uuid);
     this.uuidCallbacks[uuid] = callback;
-}
+};
 
 WSListener.prototype.sendCommand = function (uuid, command) {
     this.ws.send_cmd(uuid, command);
-}
+};
+
 module.exports = WSListener;

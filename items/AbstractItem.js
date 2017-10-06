@@ -17,7 +17,6 @@ var AbstractItem = function(widget,platform,homebridge) {
 
 };
 
-
 AbstractItem.prototype.getServices = function() {
     this.initListener();
     this.setInitialState = true;

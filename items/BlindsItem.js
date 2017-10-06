@@ -45,15 +45,15 @@ BlindsItem.prototype.callBack = function(value) {
     }
 
     //define states for Homekit
-    var delta = Math.abs(parseInt(value) - this.targetPosition);
+    var delta = Math.abs(parseInt(value) - this.targetPosition),
+        ps = this.homebridge.hap.Characteristic.PositionState.INCREASING;
     if (delta < 3) {
         //blinds don't always stop at the exact position, so take a margin of 3% here
-        var ps = this.homebridge.hap.Characteristic.PositionState.STOPPED;
+        ps = this.homebridge.hap.Characteristic.PositionState.STOPPED;
     } else if (parseInt(value) > this.targetPosition){
-        var ps = this.homebridge.hap.Characteristic.PositionState.DECREASING;
-    } else {
-        var ps = this.homebridge.hap.Characteristic.PositionState.INCREASING;
+        ps = this.homebridge.hap.Characteristic.PositionState.DECREASING;
     }
+
     this.currentPosition = value;
 
     //also make sure this change is directly communicated to HomeKit
@@ -73,7 +73,7 @@ BlindsItem.prototype.callBack = function(value) {
                 this.setFromLoxone = false;
             }.bind(this));
 
-}
+};
 
 BlindsItem.prototype.getOtherServices = function() {
 
