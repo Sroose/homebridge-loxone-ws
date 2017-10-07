@@ -12,18 +12,19 @@ exports.Pushbutton = require('../items/PushbuttonItem.js');
 exports.Colorpicker = require('../items/ColorpickerItem.js');
 
 
-exports.Factory = function(LoxPlatform,homebridge) {
+exports.Factory = function(LoxPlatform, homebridge) {
     this.platform = LoxPlatform;
     this.log = this.platform.log;
     this.homebridge = homebridge;
-    this.itemList = [];
-    this.catList = [];
+    this.itemList = {};
+    this.catList = {};
+    this.roomList = {};
     //this.uniqueIds = [];
 };
 
 //TODO: we could also get this information from the websocket, avoiding the need of an extra request.
 
-exports.Factory.prototype.sitemapUrl = function () {
+exports.Factory.prototype.sitemapUrl = function() {
     var serverString = this.platform.host;
     var serverPort = this.platform.port;
     if (this.platform.username && this.platform.password) {
@@ -33,66 +34,60 @@ exports.Factory.prototype.sitemapUrl = function () {
     return this.platform.protocol + "://" + serverString + "/data/LoxApp3.json";
 };
 
-exports.Factory.prototype.parseSitemap = function (jsonSitemap) {
+exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
 
     //this is the function that gets called by index.js
     //first, parse the Loxone JSON that holds all controls
-    exports.Factory.prototype.traverseSitemap(jsonSitemap,this);
-    //now convert these controls in accesories
-    var totalAccessories = 1;
+    exports.Factory.prototype.traverseSitemap(jsonSitemap, this);
+    //now convert these controls in accessories
     var accessoryList = [];
     for (var key in this.itemList) {
-        //process additional attributes
-        this.itemList[key] = exports.Factory.prototype.checkCustomAttrs(this.itemList[key],this.platform, this.catList);
+        if (this.itemList.hasOwnProperty(key)) {
+            //process additional attributes
+            this.itemList[key] = exports.Factory.prototype.checkCustomAttrs(this, key, this.platform, this.catList);
 
-        if (!(this.itemList[key].type in exports)){
-            this.log("Platform - The widget '" + this.itemList[key].name + "' of type "+this.itemList[key].type+" is an item not handled.");
-            continue;
+            if (!(this.itemList[key].type in exports)){
+                this.log("Platform - The widget '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " is an item not handled.");
+                continue;
+            }
+            if (this.itemList[key].skip) {
+                this.log("Platform - The widget '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " was skipped.");
+                continue;
+            }
+
+            var accessory = new exports[this.itemList[key].type](this.itemList[key], this.platform, this.homebridge);
+            this.log("Platform - Accessory Found: " + this.itemList[key].name);
+
+            if (accessoryList.length > 100) {
+                // https://github.com/nfarina/homebridge/issues/509
+                throw new Error("You have more than 100 accessories for this bridge, which is not allowed by HomeKit. Try to filer out unneeded accessories.");
+            }
+
+            accessoryList.push(accessory);
         }
-        if (this.itemList[key].skip) {
-            this.log("Platform - The widget '" + this.itemList[key].name + "' of type "+this.itemList[key].type+" was skipped.");
-            continue;
-        }
-
-        var accessory = new exports[this.itemList[key].type](this.itemList[key], this.platform, this.homebridge);
-        this.log("Platform - Accessory Found: " + this.itemList[key].name);
-        totalAccessories += 1;
-
-        if(totalAccessories > 100) {
-            // https://github.com/nfarina/homebridge/issues/509
-            throw new Error("You have more than 100 accessories for this bridge, which is not allowed by HomeKit. Try to filer out unneeded accessories.");
-        }
-
-        accessoryList.push(accessory);
-
     }
     return accessoryList;
 };
 
 
-exports.Factory.prototype.checkCustomAttrs = function(item,platform,catList) {
+exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform, catList) {
+    var item = factory.itemList[itemId];
     //this function will make accesories more precise based on other attributes
     //eg, all InfoOnlyAnalog items which start with the name 'Temperat' are considered temperature sensors
-    if(item.name.startsWith('Temperat')) {
+    if (item.name.startsWith('Temperat')) {
         item.type = "TemperatureSensor";
 
-    } else if(catList[item.cat] !== undefined && catList[item.cat].image === "00000000-0000-0002-2000000000000000.svg") {
+    } else if (catList[item.cat] !== undefined && catList[item.cat].image === "00000000-0000-0002-2000000000000000.svg") {
         //this is the lightbulb image, which means that this is a lightning control
         if(item.type === "Switch") {
             item.type = "Lightbulb";
         }
-    } else if(item.parentType === "LightController" || item.parentType === "LightControllerV2") {
+    } else if (item.parentType === "LightController" || item.parentType === "LightControllerV2") {
         //this is a subcontrol of a lightcontroller
         if(item.type === "Switch") {
             item.type = "Lightbulb";
-        } else if(item.type === "ColorPickerV2") { // Handle the new ColorPickerV2 which replaces the colorPicker in the new LightControllerV2
+        } else if (item.type === "ColorPickerV2") { // Handle the new ColorPickerV2 which replaces the colorPicker in the new LightControllerV2
             item.type = "Colorpicker";
-        }
-
-        // Support new LightControllerV2 masterValue and masterColor
-        // Controls ending with these strings are always subControls of a LightControllerV2
-        if (item.uuidAction.endsWith("masterValue") || item.uuidAction.endsWith("masterColor")) {
-            item.name += (" " + item.parentName);
         }
     }
 
@@ -111,44 +106,53 @@ exports.Factory.prototype.checkCustomAttrs = function(item,platform,catList) {
 };
 
 
-exports.Factory.prototype.traverseSitemap = function(jsonSitmap,factory) {
+exports.Factory.prototype.traverseSitemap = function(jsonSitmap, factory) {
 
-    //this function will simply add every control and subcontrol to the itemList, holding all its information
+    //this function will simply add every control and subControl to the itemList, holding all its information
     //it will also store category information, as we will use this to decide on correct Item Type
-    for (var section in jsonSitmap) {
-        if (section === "cats") {
-             for (var item in jsonSitmap[section]) {
-                item = jsonSitmap[section][item];
-                //item is UUID: { ..iteminfo...} where iteminfo has uuid, name, image and other info
-                if (typeof(item.uuid !== 'undefined')){
-                    factory.catList[item.uuid] = item;
+    for (var sectionKey in jsonSitmap) {
+        if (jsonSitmap.hasOwnProperty(sectionKey)) {
+            if (sectionKey === "cats") {
+                var cats = jsonSitmap[sectionKey];
+                for (var catUuid in cats) {
+                    if (cats.hasOwnProperty(catUuid)) {
+                        factory.catList[catUuid] = cats[catUuid];
+                    }
                 }
-            }
-        }
-        if (section === "controls") {
-            for (var item in jsonSitmap[section]) {
-                item = jsonSitmap[section][item];
-                // Append the room name, it helps you identify the item.
-                item.name += (" " + jsonSitmap["rooms"][item.room].name);
-                //item is UUID: { ..iteminfo...} where iteminfo has name, room, cat, type, uuidAction and other info
-                if (typeof(item.name) !== 'undefined'){
-                    factory.itemList[item.name] = item;
-                    //console.log(item.name);
+            } else if (sectionKey === "rooms") {
+                var rooms = jsonSitmap[sectionKey];
+                for (var roomUuid in rooms) {
+                    if (rooms.hasOwnProperty(roomUuid)) {
+                        factory.roomList[roomUuid] = rooms[roomUuid];
+                    }
                 }
-                //if this item has subcontrols (eg for LightController), do one more level
-                if (typeof(item.subControls !== 'undefined')) {
-                    for (var subitem in item.subControls) {
-                        subitem = item.subControls[subitem];
-                        subitem.name += (" (" + item.name + ")");
-                        factory.itemList[subitem.name] = subitem;
-                        //also keep track of the parent type, we can use this later to decide on this childs type
-                        factory.itemList[subitem.name].parentType = item.type;
-                        factory.itemList[subitem.name].parentName = item.name;
-                        //console.log('  ' + subitem.name);
+            } else if (sectionKey === "controls") {
+                var controls = jsonSitmap[sectionKey];
+                for (var controlUuid in controls) {
+                    if (controls.hasOwnProperty(controlUuid)) {
+                        var control = controls[controlUuid],
+                            controlRoom = factory.roomList[control.room];
+
+                        // Append the room name to the name for better identification
+                        control.name += (" in " + controlRoom.name);
+                        factory.itemList[controlUuid] = control;
+
+                        // Check if the control has any subControls like LightController(V2)
+                        if (control.subControls) {
+                            for (var subControlUuid in control.subControls) {
+                                if (control.subControls.hasOwnProperty(subControlUuid)) {
+                                    var subControl = control.subControls[subControlUuid];
+                                    subControl.parentType = control.type;
+
+                                    // Append the name of its parent control to the subControls name
+                                    subControl.name += (" of " + control.name);
+                                    factory.itemList[subControlUuid] = subControl;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
 };
