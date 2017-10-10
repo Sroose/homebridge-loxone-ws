@@ -131,7 +131,12 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap, factory) {
                 for (var controlUuid in controls) {
                     if (controls.hasOwnProperty(controlUuid)) {
                         var control = controls[controlUuid],
+                            controlRoom = "'No Room'";
+
+                        // The controls room is not defined if the room "Not used" is assigned via the Config
+                        if (control.room) {
                             controlRoom = factory.roomList[control.room];
+                        }
 
                         // Append the room name to the name for better identification
                         control.name += (" in " + controlRoom.name);
