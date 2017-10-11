@@ -31,7 +31,7 @@ SwitchItem.prototype.callBack = function(value) {
                 this.setFromLoxone = false;
             }.bind(this)
         );
-}
+};
 
 SwitchItem.prototype.getOtherServices = function() {
     var otherService = new this.homebridge.hap.Service.Switch();
@@ -53,7 +53,7 @@ SwitchItem.prototype.onCommand = function() {
     //function to set the command to be used for On
     //for a switch, this is 'On', but subclasses can override this to eg Pulse
     return 'On';
-}
+};
 
 SwitchItem.prototype.setItemState = function(value, callback) {
 

@@ -44,11 +44,7 @@ ColorItem.prototype.callBack = function(value) {
             this.hue = parseInt(h);
             this.saturation = parseInt(s);
             this.brightness = parseInt(v);
-            if(this.brightness > 0) {
-                this.power = true;
-            } else {
-                this.power = false;
-            }
+            this.power = this.brightness > 0;
         }
     }
 
@@ -71,7 +67,7 @@ ColorItem.prototype.callBack = function(value) {
     var self = this;
     setTimeout(function(){  self.setFromLoxone = false; }, 1000);
 
-}
+};
 
 ColorItem.prototype.getOtherServices = function() {
 
@@ -138,26 +134,23 @@ ColorItem.prototype.setItemPowerState = function(value, callback) {
     this.log("[color] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
-
 };
 
 ColorItem.prototype.setItemHueState = function(value, callback) {
     this.hue = parseInt(value);
     this.setColorState(callback);
-}
+};
+
 ColorItem.prototype.setItemSaturationState = function(value, callback) {
     this.saturation = parseInt(value);
     this.setColorState(callback);
-}
+};
+
 ColorItem.prototype.setItemBrightnessState = function(value, callback) {
     this.brightness = parseInt(value);
-    if(this.brightness > 0) {
-        this.power = true;
-    } else {
-        this.power = false;
-    }
+    this.power = this.brightness > 0;
     this.setColorState(callback);
-}
+};
 
 ColorItem.prototype.setColorState = function(callback) {
     if (this.setInitialState || this.setFromLoxone) {
@@ -170,5 +163,6 @@ ColorItem.prototype.setColorState = function(callback) {
     this.log("[color] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
-}
+};
+
 module.exports = ColorItem;

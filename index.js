@@ -28,7 +28,7 @@ module.exports = function(homebridge) {
             Utility.addSupportTo(ItemFactory.Pushbutton, ItemFactory.Switch);
 
     homebridge.registerPlatform("homebridge-loxoneWs", "LoxoneWs", LoxPlatform);
-}
+};
 
 // Platform constructor
 // config may be null
@@ -63,7 +63,7 @@ LoxPlatform.prototype.accessories = function(callback) {
         url: url,
         json: true
     }, function(err, response, json) {
-        if (!err && response.statusCode == 200) {
+        if (!err && response.statusCode === 200) {
             callback(itemFactory.parseSitemap(json));
         } else {
             that.log("Platform - There was a problem connecting to OpenHAB.");
