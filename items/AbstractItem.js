@@ -8,12 +8,18 @@ var AbstractItem = function(widget,platform,homebridge) {
     this.homebridge = homebridge;
     this.log = this.platform.log;
     this.name = widget.name;
+    this.UUID = homebridge.hap.uuid.generate(String(widget.uuidAction));
+    
+    // provide explicit UUID to prevent automatic UUID generation by homebridge (which would fail because of possibly equal item name)
+    this.uuid_base = this.UUID;
 
     //other variables used by child classes
     this.setFromLoxone = false;
+    
+	// console.log("Generating new homebridge accessory '" + this.name + "' with UUID: " + this.UUID + " from accessory with ID: " + widget.uuidAction);
 
     //Add as ACCESSORY (parent class)
-    AbstractItem.super_.call(this, this.name, homebridge.hap.uuid.generate(String(this.widget.name)));
+    AbstractItem.super_.call(this, this.name, this.UUID);
 
 };
 
