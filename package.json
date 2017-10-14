@@ -1,6 +1,6 @@
 {
   "name": "homebridge-loxone-ws",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Websocket based Loxone plugin for homebridge (https://github.com/nfarina/homebridge)",
   "main": "index.js",
   "repository": {
