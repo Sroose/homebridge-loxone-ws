@@ -28,6 +28,11 @@ Install the plugin through npm or download the files from here.
 ```sh
 $ sudo npm install -g homebridge-loxone-ws
 ```
+Or update to latest version when already installed:
+```sh
+$ sudo npm update -g homebridge-loxone-ws
+```
+
 Note: the plugin requires extra node modules, but these should be automatically installed:
 - node-lox-ws-api
 - request
