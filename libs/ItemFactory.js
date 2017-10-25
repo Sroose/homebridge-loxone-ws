@@ -10,6 +10,7 @@ exports.Dimmer = require('../items/DimmerItem.js');
 exports.Jalousie = require('../items/BlindsItem.js');
 exports.Pushbutton = require('../items/PushbuttonItem.js');
 exports.Colorpicker = require('../items/ColorpickerItem.js');
+exports.Gate = require('../items/GateItem.js');
 
 
 exports.Factory = function(LoxPlatform, homebridge) {
@@ -91,12 +92,21 @@ exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform,
         }
     }
 
+    if (item.type === "Gate") {
+        item.type = "Gate"
+    }
+
     if (item.type === "EIBDimmer") {
         item.type = "Dimmer"
     }
 
     if(item.name.indexOf("Loxone") !== -1) {
         //this is a Loxone status or temperature, I don't need these in Siri
+        item.skip = true;
+    }
+
+    if ((item.uuidAction.indexOf("/masterValue") !== -1) || (item.uuidAction.indexOf("/masterColor") !== -1)) {
+        // the 'Overall Brightness' and 'Overall Color' features of the new Loxone LightController2 don't really have a context in Homekit, skip them
         item.skip = true;
     }
 
