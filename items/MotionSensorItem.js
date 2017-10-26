@@ -19,7 +19,7 @@ MotionSensorItem.prototype.initListener = function() {
 MotionSensorItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
 
-    console.log("Got new state for Motion: " + value);
+    //console.log("Got new state for Motion: " + value);
 
     this.motiondetected = value;
 
