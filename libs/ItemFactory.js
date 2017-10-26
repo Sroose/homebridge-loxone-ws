@@ -11,7 +11,8 @@ exports.Jalousie = require('../items/BlindsItem.js');
 exports.Pushbutton = require('../items/PushbuttonItem.js');
 exports.Colorpicker = require('../items/ColorpickerItem.js');
 exports.Gate = require('../items/GateItem.js');
-
+exports.DoorBell = require('../items/DoorBellItem.js');
+exports.MotionSensor = require('../items/MotionSensorItem.js');
 
 exports.Factory = function(LoxPlatform, homebridge) {
     this.platform = LoxPlatform;
@@ -93,7 +94,17 @@ exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform,
     }
 
     if (item.type === "Gate") {
-        item.type = "Gate"
+        item.type = "Gate";
+    }
+
+    if (item.type == "InfoOnlyDigital") {
+        if (item.defaultIcon == '00000000-0000-0021-2000000000000000') {
+            item.type = "DoorBell";
+
+        } else if ((item.name.indexOf("Motion") !== -1) || (item.name.indexOf("Presence") !== -1)) {
+            item.type = "MotionSensor";
+
+        }
     }
 
     if (item.type === "EIBDimmer") {

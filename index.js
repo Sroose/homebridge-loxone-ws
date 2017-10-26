@@ -19,9 +19,11 @@ module.exports = function(homebridge) {
     Utility.addSupportTo(ItemFactory.AbstractItem, Accessory);
         //All other items are child of the abstractItem
         Utility.addSupportTo(ItemFactory.TemperatureSensor, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.MotionSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Dimmer, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Colorpicker, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Gate, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.DoorBell, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Jalousie, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Switch, ItemFactory.AbstractItem);
             //Add childs of switch
