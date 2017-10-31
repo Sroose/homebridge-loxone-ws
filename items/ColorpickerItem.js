@@ -46,6 +46,13 @@ ColorItem.prototype.callBack = function(value) {
             this.brightness = parseInt(v);
             this.power = this.brightness > 0;
         }
+    } else if (m = value.match(/^\W*temp?\(([^)]*)\)\W*$/i)) {
+        var params = m[1].split(',');
+
+        // could also be a colour temp update in the form: temp(100,4542)
+        this.brightness = parseInt(params[0]);
+        this.power = this.brightness > 0;
+
     }
 
     //also make sure this change is directly communicated to HomeKit

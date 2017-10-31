@@ -22,7 +22,7 @@ GateItem.prototype.initListener = function() {
 };
 
 GateItem.prototype.callBackActive = function(value) {
-    //console.log("Got new state for GateActive: " + value);
+    console.log("Got new state for GateActive: " + value);
 
     var new_doorstate = this.currentdoorstate;
     if (value == 1) {
@@ -63,7 +63,7 @@ GateItem.prototype.callBackActive = function(value) {
 };
 
 GateItem.prototype.callBackPosition = function(value) {
-    //console.log("Got new state for GatePosition: " + value);
+    console.log("Got new state for GatePosition: " + value);
 
     var new_doorstate = this.currentdoorstate;
     if (value == 1) {

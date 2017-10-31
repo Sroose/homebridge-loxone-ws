@@ -19,7 +19,9 @@ module.exports = function(homebridge) {
     Utility.addSupportTo(ItemFactory.AbstractItem, Accessory);
         //All other items are child of the abstractItem
         Utility.addSupportTo(ItemFactory.TemperatureSensor, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.HumiditySensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.MotionSensor, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.LightSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Dimmer, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Colorpicker, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Gate, ItemFactory.AbstractItem);
@@ -46,11 +48,13 @@ function LoxPlatform(log, config) {
     if (!this.config['port']) throw new Error("Configuration missing: loxone port (if default port, specify 80)");
     if (!this.config['username']) throw new Error("Configuration missing: loxone username");
     if (!this.config['password']) throw new Error("Configuration missing: loxone password");
+    if (!this.config['rooms']) throw new Error("Configuration missing: rooms array");
 
     this.host     = config["host"];
     this.port     = config["port"];
     this.username     = config["username"];
     this.password = config["password"];
+    this.rooms = config["rooms"];
 
     //Also make a WS connection
     this.ws = new WSListener(platform);
