@@ -21,6 +21,7 @@ module.exports = function(homebridge) {
         Utility.addSupportTo(ItemFactory.TemperatureSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.HumiditySensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.MotionSensor, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.ContactSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.LightSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Dimmer, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Colorpicker, ItemFactory.AbstractItem);

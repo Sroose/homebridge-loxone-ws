@@ -15,6 +15,7 @@ exports.Colorpicker = require('../items/ColorpickerItem.js');
 exports.Gate = require('../items/GateItem.js');
 exports.DoorBell = require('../items/DoorBellItem.js');
 exports.MotionSensor = require('../items/MotionSensorItem.js');
+exports.ContactSensor = require('../items/ContactSensorItem.js');
 exports.LightSensor = require('../items/LightSensorItem.js');
 
 exports.Factory = function(LoxPlatform, homebridge) {
@@ -149,11 +150,19 @@ exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform,
         } else if ((item.name.indexOf("Motion") !== -1) || (item.name.indexOf("Presence") !== -1)) {
             item.type = "MotionSensor";
 
+        } else if (item.name.indexOf("Door Contact") !== -1) {
+            item.type = "ContactSensor";
+
         }
+
     }
 
     if (item.type == "InfoOnlyAnalog") {
-        if ((item.name.indexOf("Motion") !== -1) || (item.name.indexOf("Presence") !== -1)) {
+
+        if (item.name.indexOf("Door Contact") !== -1) {
+            item.type = "ContactSensor";
+
+        } else if ((item.name.indexOf("Motion") !== -1) || (item.name.indexOf("Presence") !== -1)) {
             item.type = "MotionSensor";
 
         } else if ((item.name.indexOf("Brightness") !== -1) || (item.name.indexOf("Light Level") !== -1)) {
