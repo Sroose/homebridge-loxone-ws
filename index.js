@@ -28,6 +28,7 @@ module.exports = function(homebridge) {
         Utility.addSupportTo(ItemFactory.DoorBell, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Jalousie, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Switch, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.TimedSwitch, ItemFactory.AbstractItem);
             //Add childs of switch
             Utility.addSupportTo(ItemFactory.Lightbulb, ItemFactory.Switch);
             Utility.addSupportTo(ItemFactory.Pushbutton, ItemFactory.Switch);

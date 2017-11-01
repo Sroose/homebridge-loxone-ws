@@ -6,6 +6,7 @@ exports.AbstractItem = require('../items/AbstractItem.js');
 exports.TemperatureSensor = require('../items/TemperatureSensorItem.js');
 exports.HumiditySensor = require('../items/HumiditySensorItem.js');
 exports.Switch = require('../items/SwitchItem.js');
+exports.TimedSwitch = require('../items/TimedSwitchItem.js');
 exports.Lightbulb = require('../items/LightbulbItem.js');
 exports.Dimmer = require('../items/DimmerItem.js');
 exports.Jalousie = require('../items/BlindsItem.js');
@@ -109,11 +110,19 @@ exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform,
     var item = factory.itemList[itemId];
     //this function will make accesories more precise based on other attributes
     //eg, all InfoOnlyAnalog items which start with the name 'Temperat' are considered temperature sensors
+
+    //item.skip = true; // TODO - REMOVE!!!
+
     if (item.name.startsWith('Temperat')) {
         item.type = "TemperatureSensor";
 
     } else if (item.name.indexOf("Humidity") !== -1) {
         item.type = "HumiditySensor";
+
+    } else if (item.type == "TimedSwitch") {
+        if (item.name.indexOf("Fan Timer") !== -1) { // fans are switches in HomeKit
+            item.type = "TimedSwitch";
+        }
 
     } else if (catList[item.cat] !== undefined && catList[item.cat].image === "00000000-0000-0002-2000000000000000.svg") {
         //this is the lightbulb image, which means that this is a lightning control
