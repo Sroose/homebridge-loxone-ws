@@ -3,6 +3,7 @@ var exports = module.exports = {};
 exports.AbstractItem = require('../items/AbstractItem.js');
 //Important: name the exports identical to Loxone type to have an automatic match
 //If not possible, define in checkCustomAttrs which will override in certain cases
+exports.LightControllerV2MoodSwitch = require('../items/LightControllerV2MoodSwitchItem.js');
 exports.TemperatureSensor = require('../items/TemperatureSensorItem.js');
 exports.HumiditySensor = require('../items/HumiditySensorItem.js');
 exports.Switch = require('../items/SwitchItem.js');
@@ -54,20 +55,20 @@ exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
             this.itemList[key] = exports.Factory.prototype.checkCustomAttrs(this, key, this.platform, this.catList);
 
             if (!(this.itemList[key].type in exports)){
-                this.log("Platform - The widget '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " is an item not handled.");
+                //this.log("Platform - The widget '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " is an item not handled.");
                 continue;
             }
             if (this.itemList[key].skip) {
-                this.log("Platform - The widget '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " was skipped.");
+                //this.log("Platform - The widget '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " was skipped.");
                 continue;
             }
 
             var accessory = new exports[this.itemList[key].type](this.itemList[key], this.platform, this.homebridge);
-            this.log("Platform - Accessory Found: " + this.itemList[key].name);
+            //this.log("Platform - Accessory Found: " + this.itemList[key].name);
 
-            if (accessoryList.length > 100) {
+            if (accessoryList.length > 99) {
                 // https://github.com/nfarina/homebridge/issues/509
-                this.log("Platform - Accessory count limit (100) exceeded so skipping: '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " was skipped.");
+                //this.log("Platform - Accessory count limit (100) exceeded so skipping: '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " was skipped.");
             } else {
                 
                 var keyToLookup = key;
@@ -87,15 +88,21 @@ exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
                     //this.log(this.platform.rooms.includes(controlRoom));
 
                     if (this.platform.rooms.includes(controlRoom)) {
-                    //if (controlRoom in this.platform.rooms) {
-                        accessoryList.push(accessory);
+
+                        var pushAccessory = true;
+                        if ((this.platform.moodSwitches == 'only') && (this.itemList[key].type !== 'LightControllerV2MoodSwitch')) {
+                            pushAccessory = false;
+                        }
+                        if (pushAccessory) {
+                            accessoryList.push(accessory);
+                        }
                     } else {
-                        this.log('Platform - Skipping as room ' + controlRoom + ' is not in the config.json rooms list.');
+                        //this.log('Platform - Skipping as room ' + controlRoom + ' is not in the config.json rooms list.');
                     }
 
                 } else {
                     // cannot add this accessory as it does not have a room
-                    this.log('Platform - Skipping as could not determine which room the accessory is in.');
+                    //this.log('Platform - Skipping as could not determine which room the accessory is in.');
                 }
             }
 
@@ -243,6 +250,28 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap, factory) {
                                 }
                             }
                         }
+
+                        // if we have a LightController(V2) then we create a new control (switch) for each Mood
+                        if ((control.type == 'LightControllerV2') && ((factory.platform.moodSwitches == 'all') || (factory.platform.moodSwitches == 'only'))) {
+                            var moods = JSON.parse(factory.platform.ws.getLastCachedValue(control.states.moodList));
+                            //factory.log(moods.length);
+                            for (var r = 0; r < moods.length; r++) {
+                                var mood = moods[r];
+                                // create a control for LightControllerV2MoodSwitch for each Mood of this LightControllerV2
+                                var moodSwitchControl = JSON.parse(JSON.stringify(control));
+                                moodSwitchControl.subControls = null;
+                                moodSwitchControl.uuidAction = controlUuid + '/' + mood.id;
+                                moodSwitchControl.name = 'Mood ' + mood.name + ' of ' + control.name;
+                                moodSwitchControl.parentType = control.type;
+                                moodSwitchControl.uuidActionOriginal = controlUuid;
+                                moodSwitchControl.mood = mood;
+                                moodSwitchControl.type = 'LightControllerV2MoodSwitch';
+                                factory.itemList[moodSwitchControl.uuidAction] = moodSwitchControl;
+
+                            }
+                        }
+
+
                     }
                 }
             }
