@@ -26,6 +26,7 @@ module.exports = function(homebridge) {
         Utility.addSupportTo(ItemFactory.LightSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Dimmer, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Colorpicker, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.ColorTemperaturePicker, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Gate, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.DoorBell, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Jalousie, ItemFactory.AbstractItem);
@@ -53,11 +54,11 @@ function LoxPlatform(log, config) {
     if (!this.config['password']) throw new Error("Configuration missing: loxone password");
     if (!this.config['rooms']) throw new Error("Configuration missing: rooms array");
 
-    this.host     = config["host"];
-    this.port     = config["port"];
-    this.username     = config["username"];
-    this.password = config["password"];
-    this.rooms = config["rooms"];
+    this.host           = config["host"];
+    this.port           = config["port"];
+    this.username       = config["username"];
+    this.password       = config["password"];
+    this.rooms          = config["rooms"];
     if (this.config['moodSwitches']) {
         this.moodSwitches = config["moodSwitches"];
     } else {
@@ -73,9 +74,9 @@ LoxPlatform.prototype.accessories = function(callback) {
     //this.log("Getting Loxone configuration.");
     var itemFactory = new ItemFactory.Factory(this,Homebridge);
     var url = itemFactory.sitemapUrl();
-    //this.log("Platform - Waiting 10 seconds until initial state is retrieved via WebSocket.");
+    this.log("Platform - Waiting 10 seconds until initial state is retrieved via WebSocket.");
     setTimeout(function(){
-        //that.log("Platform - Retrieving initial config from " + url);
+        that.log("Platform - Retrieving initial config from " + url);
         request.get({
             url: url,
             json: true

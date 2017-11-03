@@ -13,6 +13,7 @@ exports.Dimmer = require('../items/DimmerItem.js');
 exports.Jalousie = require('../items/BlindsItem.js');
 exports.Pushbutton = require('../items/PushbuttonItem.js');
 exports.Colorpicker = require('../items/ColorpickerItem.js');
+exports.ColorTemperaturePicker = require('../items/ColorTemperatureItem.js');
 exports.Gate = require('../items/GateItem.js');
 exports.DoorBell = require('../items/DoorBellItem.js');
 exports.MotionSensor = require('../items/MotionSensorItem.js');
@@ -143,6 +144,9 @@ exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform,
             item.type = "Lightbulb";
         } else if (item.type === "ColorPickerV2") { // Handle the new ColorPickerV2 which replaces the colorPicker in the new LightControllerV2
             item.type = "Colorpicker";
+        } else if (item.type === "ColorTemperaturePickerV2") { // Handle the new ColorPickerV2 which replaces the colorPicker in the new LightControllerV2
+            item.type = "ColorTemperaturePicker";
+
         }
     }
 
@@ -169,7 +173,7 @@ exports.Factory.prototype.checkCustomAttrs = function(factory, itemId, platform,
         if (item.name.indexOf("Door Contact") !== -1) {
             item.type = "ContactSensor";
 
-        } else if ((item.name.indexOf("Motion") !== -1) || (item.name.indexOf("Presence") !== -1)) {
+        } else if (((item.name.indexOf("Motion") !== -1) || (item.name.indexOf("Presence") !== -1)) && (item.name.indexOf("Brightness") == -1)) {
             item.type = "MotionSensor";
 
         } else if ((item.name.indexOf("Brightness") !== -1) || (item.name.indexOf("Light Level") !== -1)) {
@@ -247,6 +251,19 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap, factory) {
                                     // Append the name of its parent control to the subControls name
                                     subControl.name += (" of " + control.name);
                                     factory.itemList[subControlUuid] = subControl;
+
+                                    if (subControl.type == 'ColorPickerV2') {
+                                        // create a new control ColorTemperaturePickerV2
+
+                                        var colorTemperatureControl = JSON.parse(JSON.stringify(subControl));
+                                        colorTemperatureControl.name = 'ColorTemp ' + colorTemperatureControl.name;
+                                        colorTemperatureControl.uuidActionOriginal = colorTemperatureControl.uuidAction;
+                                        colorTemperatureControl.uuidAction = colorTemperatureControl.uuidAction + '/temp';
+                                        colorTemperatureControl.type = 'ColorTemperaturePickerV2';
+                                        factory.itemList[colorTemperatureControl.uuidAction] = colorTemperatureControl;
+
+                                    }
+
                                 }
                             }
                         }

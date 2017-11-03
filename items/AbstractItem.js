@@ -39,9 +39,9 @@ AbstractItem.prototype.getInformationServices = function() {
     var informationService = new this.homebridge.hap.Service.AccessoryInformation();
 
     informationService
-        .setCharacteristic(this.homebridge.hap.Characteristic.Manufacturer, this.manufacturer)
-        .setCharacteristic(this.homebridge.hap.Characteristic.Model, this.model)
-        .setCharacteristic(this.homebridge.hap.Characteristic.SerialNumber, this.serialNumber)
+        .setCharacteristic(this.homebridge.hap.Characteristic.Manufacturer, 'Loxone')
+        .setCharacteristic(this.homebridge.hap.Characteristic.Model, this.name)
+        .setCharacteristic(this.homebridge.hap.Characteristic.SerialNumber, this.widget.uuidAction)
         .setCharacteristic(this.homebridge.hap.Characteristic.Name, this.name);
     return informationService;
 };

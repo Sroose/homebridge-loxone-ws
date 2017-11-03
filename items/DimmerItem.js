@@ -26,10 +26,10 @@ DimmerItem.prototype.callBack = function(value) {
     this.setFromLoxone = true;
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.On)
-        .setValue(this.currentState > 0);
+        .updateValue(this.currentState > 0);
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
-        .setValue(this.currentState,
+        .updateValue(this.currentState,
             function() {
                 this.setFromLoxone = false;
             }.bind(this)
@@ -46,12 +46,12 @@ DimmerItem.prototype.getOtherServices = function() {
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemPowerState.bind(this))
         .on('get', this.getItemPowerState.bind(this))
-        .setValue(this.currentState > 0);
+        .updateValue(this.currentState > 0);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
         .on('set', this.setItemState.bind(this))
         .on('get', this.getItemState.bind(this))
-        .setValue(this.currentState);
+        .updateValue(this.currentState);
 
     return otherService;
 };
