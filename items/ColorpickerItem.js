@@ -23,9 +23,7 @@ ColorItem.prototype.initListener = function() {
 
 ColorItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
-    //console.log("Got new state for Color: " + value);
-
-    // TODO - IF WE HAVE A temp() VALUE THEN IT MEANS THIS LIGHT IS IN COLOR MODE, SO WE SHOULD SET THIS TO OFF
+    //console.log("Got new state for color " + value);
 
     //incoming value is a HSV string that needs to be parsed
     var m;
@@ -47,36 +45,29 @@ ColorItem.prototype.callBack = function(value) {
             this.saturation = parseInt(s);
             this.brightness = parseInt(v);
             this.power = this.brightness > 0;
-
-            //also make sure this change is directly communicated to HomeKit
-            this.otherService
-                .getCharacteristic(this.homebridge.hap.Characteristic.On)
-                .updateValue(this.power);
-            this.otherService
-                .getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
-                .updateValue(this.brightness);
-            this.otherService
-                .getCharacteristic(this.homebridge.hap.Characteristic.Hue)
-                .updateValue(this.hue);
-            this.otherService
-                .getCharacteristic(this.homebridge.hap.Characteristic.Saturation)
-                .updateValue(this.saturation);
         }
     } else if (m = value.match(/^\W*temp?\(([^)]*)\)\W*$/i)) {
-        // this light is being controlled by temp() (color temperature) values now, set this color device to Off
-        if ((this.power == true) || (this.brightbness > 0)) {
-            this.power = false;
-            this.brightness = 0;
-            //console.log("Got temp() state for Color: turning off");
-            this.otherService
-                .getCharacteristic(this.homebridge.hap.Characteristic.On)
-                .updateValue(this.power);
-            this.otherService
-                .getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
-                .updateValue(this.brightness);
-        }
+        var params = m[1].split(',');
+
+        // could also be a colour temp update in the form: temp(100,4542)
+        this.brightness = parseInt(params[0]);
+        this.power = this.brightness > 0;
 
     }
+
+    //also make sure this change is directly communicated to HomeKit
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.On)
+        .updateValue(this.power);
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
+        .updateValue(this.brightness);
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.Hue)
+        .updateValue(this.hue);
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.Saturation)
+        .updateValue(this.saturation);
 
 };
 
@@ -152,7 +143,7 @@ ColorItem.prototype.setItemBrightnessState = function(value, callback) {
 ColorItem.prototype.setColorState = function(callback) {
     //compose hsv string
     var command = "hsv(" + this.hue + "," + this.saturation + "," + this.brightness + ")";
-    this.log("[color] iOS - send message to " + this.name + ' ' + this.uuidAction + ' ' + command);
+    this.log("[color] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 };
