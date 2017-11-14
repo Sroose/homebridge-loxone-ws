@@ -123,7 +123,7 @@ BlindsItem.prototype.setItem = function(value, callback) {
         //reverse again the value
         command = "ManualPosition/" + (100 - value);
     }
-    this.log("[BLINDS] iOS - send message to " + this.name + ": " + command);
+    this.log("[blinds] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 
