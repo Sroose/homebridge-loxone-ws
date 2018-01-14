@@ -22,7 +22,7 @@ WSListener.prototype.startListener = function () {
 
     if (typeof this.ws == 'undefined') {
         console.log("New WS: " + this.host + ":" + this.port);
-        this.ws = new LoxoneWebSocket(this.host + ":" + this.port, this.username, this.password, true);
+        this.ws = new LoxoneWebSocket(this.host + ":" + this.port, this.username, this.password, true, 'Token-Enc');
         this.ws.connect();
     }
 
