@@ -123,7 +123,9 @@ DimmerItem.prototype.setItemPowerState = function(value, callback) {
 
     this.log("[dimmer] iOS - send on/off message to " + this.name + ": " + value);
     var command = (value == '1') ? 'On' : 'Off';
-    this.platform.ws.sendCommand(this.uuidAction, command);
+    if (this.platform.ws.is_connected()) {
+      this.platform.ws.sendCommand(this.uuidAction, command);
+    }
     callback();
 
 };
