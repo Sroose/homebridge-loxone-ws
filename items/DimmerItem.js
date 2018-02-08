@@ -92,7 +92,9 @@ DimmerItem.prototype.setItemState = function(value, callback) {
 
     this.log("[dimmer] iOS - send brightness message to " + this.name + ": " + value);
     var command = value; //Loxone expects a value between 0 and 100
-    this.platform.ws.sendCommand(this.uuidAction, command);
+    if (this.platform.ws.is_connected()) {
+      this.platform.ws.sendCommand(this.uuidAction, command);
+    }
     callback();
 
 };
