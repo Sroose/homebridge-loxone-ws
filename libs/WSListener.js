@@ -37,15 +37,16 @@ WSListener.prototype.startListener = function () {
     });
 
     this.ws.on('connect_failed', function() {
-        //throw new Error("LOXONE WS: connect failed");
-        //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
-        self.log("LOXONE WS: connection failed, reconnect in 10 seconds.");
-        setTimeout(function(){ self.ws.connect(); }, 10000);
+      //throw new Error("LOXONE WS: connect failed");
+      //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
+      self.log("LOXONE WS: connection failed, reconnecting...");
+      setTimeout(function(){ self.ws.connect(); }, 10000);
     });
 
     this.ws.on('connection_error', function(error) {
-       //throw new Error("LOXONE WS: connection error: " + error);
-      self.log("LOXONE WS: connection error, reconnect in 10 seconds." + error);
+      //throw new Error("LOXONE WS: connection error: " + error);
+      //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
+      self.log("LOXONE WS: connection error, reconnecting..." + error);
       setTimeout(function(){ self.ws.connect(); }, 10000);
     });
 
