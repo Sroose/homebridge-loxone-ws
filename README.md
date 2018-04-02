@@ -71,14 +71,17 @@ Replace fields
 
 I strongly suggest to create a dedicate Loxone user through Loxone Config (eg homebridge). Like this you can restrict access to sensitive items or filter out unneeded controls.
 
-## Optional configuration fields in the platform section
+### Optional configuration fields in the platform section
 
 **rooms**
+
 To specify an array of interested rooms to filter on. If empty or not given, all elements are used.
 Eg: specifying "rooms" : ["Kitchen", "Bedroom"] will limit your bridge to only elements from those 2 rooms. 
 
 **moodSwitches**
+
 Can use Loxone moods which are part of LightControllerV2 elements. (In order to use this, you'll need to [convert](https://www.loxone.com/enen/kb/lighting-controller-v2/) any 'old' LightControllers blocks.)
+
 Has 3 possible values
 * none : does not include moods. This is the default in case not given.
 * all : include moods as actionable item
