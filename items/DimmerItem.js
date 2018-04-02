@@ -7,7 +7,7 @@ var DimmerItem = function(widget,platform,homebridge) {
     this.platform = platform;
     this.uuidAction = widget.uuidAction; //to control a dimmer, use the uuidAction
     this.stateUuid = widget.states.position; //a dimmer always has a state called position, which is the uuid which will receive the event to read
-    this.currentState = undefined; //will be a value between 0 and 100 for dimmers
+    this.currentState = 0; //will be a value between 0 and 100 for dimmers
 
     DimmerItem.super_.call(this, widget,platform,homebridge);
 };
@@ -23,35 +23,27 @@ DimmerItem.prototype.callBack = function(value) {
     this.currentState = value;
 
     //also make sure this change is directly communicated to HomeKit
-    this.setFromLoxone = true;
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.On)
-        .setValue(this.currentState > 0);
+        .updateValue(this.currentState > 0);
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
-        .setValue(this.currentState,
-            function() {
-                this.setFromLoxone = false;
-            }.bind(this)
-        );
+        .updateValue(this.currentState);
 };
 
 DimmerItem.prototype.getOtherServices = function() {
-
-    //setting variable to skip update for intial value
-    this.setInitialState = true;
 
     var otherService = new this.homebridge.hap.Service.Lightbulb();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemPowerState.bind(this))
         .on('get', this.getItemPowerState.bind(this))
-        .setValue(this.currentState > 0);
+        .updateValue(this.currentState > 0);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
         .on('set', this.setItemState.bind(this))
         .on('get', this.getItemState.bind(this))
-        .setValue(this.currentState);
+        .updateValue(this.currentState);
 
     return otherService;
 };
@@ -73,23 +65,6 @@ DimmerItem.prototype.setItemState = function(value, callback) {
 
     var self = this;
 
-    if (this.setInitialState) {
-        this.setInitialState = false;
-        callback();
-        return;
-    }
-
-    if (this.setFromLoxone) {
-        callback();
-        return;
-    }
-
-    if(value === undefined) {
-        //happens at initial load
-        callback();
-        return;
-    }
-
     this.log("[dimmer] iOS - send brightness message to " + this.name + ": " + value);
     var command = value; //Loxone expects a value between 0 and 100
     if (typeof this.platform.ws != 'undefined') {
@@ -106,22 +81,6 @@ DimmerItem.prototype.setItemPowerState = function(value, callback) {
 
     var self = this;
 
-    if (this.setInitialState) {
-        this.setInitialState = false;
-        callback();
-        return;
-    }
-
-    if (this.setFromLoxone) {
-        callback();
-        return;
-    }
-
-    if(value === undefined) {
-        //happens at initial load
-        callback();
-        return;
-    }
 
     this.log("[dimmer] iOS - send on/off message to " + this.name + ": " + value);
     var command = (value == '1') ? 'On' : 'Off';

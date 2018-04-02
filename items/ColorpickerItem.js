@@ -46,54 +46,54 @@ ColorItem.prototype.callBack = function(value) {
             this.brightness = parseInt(v);
             this.power = this.brightness > 0;
         }
+    } else if (m = value.match(/^\W*temp?\(([^)]*)\)\W*$/i)) {
+        var params = m[1].split(',');
+
+        // could also be a colour temp update in the form: temp(100,4542)
+        this.brightness = parseInt(params[0]);
+        this.power = this.brightness > 0;
+
     }
 
     //also make sure this change is directly communicated to HomeKit
-    this.setFromLoxone = true;
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.On)
-        .setValue(this.power);
+        .updateValue(this.power);
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
-        .setValue(this.brightness);
+        .updateValue(this.brightness);
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.Hue)
-        .setValue(this.hue);
+        .updateValue(this.hue);
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.Saturation)
-        .setValue(this.saturation);
-
-    //because the 3 values are communicated separately for Homekit, work with a small time window
-    var self = this;
-    setTimeout(function(){  self.setFromLoxone = false; }, 1000);
+        .updateValue(this.saturation);
 
 };
 
 ColorItem.prototype.getOtherServices = function() {
-
-    this.setInitialState = true;
 
     var otherService = new this.homebridge.hap.Service.Lightbulb();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemPowerState.bind(this))
         .on('get', this.getItemPowerState.bind(this))
-        .setValue(this.power);
+        .updateValue(this.power);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.Brightness)
         .on('set', this.setItemBrightnessState.bind(this))
         .on('get', this.getItemBrightnessState.bind(this))
-        .setValue(this.brightness);
+        .updateValue(this.brightness);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.Hue)
         .on('set', this.setItemHueState.bind(this))
         .on('get', this.getItemHueState.bind(this))
-        .setValue(this.hue);
+        .updateValue(this.hue);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.Saturation)
         .on('set', this.setItemSaturationState.bind(this))
         .on('get', this.getItemSaturationState.bind(this))
-        .setValue(this.saturation);
+        .updateValue(this.saturation);
 
     return otherService;
 };
@@ -114,26 +114,14 @@ ColorItem.prototype.getItemSaturationState = function(callback) {
 ColorItem.prototype.setItemPowerState = function(value, callback) {
 
     //sending new power state to loxone
-    //added some logic to prevent a loop when the change because of external event captured by callback
-
-    var self = this;
-
-    if (this.setInitialState) {
-        //because the other 3 values are communicated separately for Homekit, work with a small time window
-        setTimeout(function(){   self.setInitialState = false; }, 1000);
+    if (!value) {
+        //loxone does not understand 'on' or 'off', we interpret Homekit 'off' as setting brightness to 0
+        this.brightness = 0;
+        this.setColorState(callback);
+    } else {
         callback();
-        return;
     }
 
-    if (this.setFromLoxone) {
-        callback();
-        return;
-    }
-
-    var command = (value) ? 'On' : 'Off';
-    this.log("[color] iOS - send message to " + this.name + ": " + command);
-    this.platform.ws.sendCommand(this.uuidAction, command);
-    callback();
 };
 
 ColorItem.prototype.setItemHueState = function(value, callback) {
@@ -153,11 +141,6 @@ ColorItem.prototype.setItemBrightnessState = function(value, callback) {
 };
 
 ColorItem.prototype.setColorState = function(callback) {
-    if (this.setInitialState || this.setFromLoxone) {
-        callback();
-        return;
-    }
-
     //compose hsv string
     var command = "hsv(" + this.hue + "," + this.saturation + "," + this.brightness + ")";
     this.log("[color] iOS - send message to " + this.name + ": " + command);

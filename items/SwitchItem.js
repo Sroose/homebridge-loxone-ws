@@ -23,14 +23,9 @@ SwitchItem.prototype.callBack = function(value) {
     this.currentState = value;
 
     //also make sure this change is directly communicated to HomeKit
-    this.setFromLoxone = true;
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.On)
-        .setValue(this.currentState == '1',
-            function() {
-                this.setFromLoxone = false;
-            }.bind(this)
-        );
+        .updateValue(this.currentState == '1');
 };
 
 SwitchItem.prototype.getOtherServices = function() {
@@ -39,7 +34,7 @@ SwitchItem.prototype.getOtherServices = function() {
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemState.bind(this))
         .on('get', this.getItemState.bind(this))
-        .setValue(this.currentState == '1');
+        .updateValue(this.currentState == '1');
 
     return otherService;
 };
@@ -61,18 +56,7 @@ SwitchItem.prototype.setItemState = function(value, callback) {
     //added some logic to prevent a loop when the change because of external event captured by callback
 
     var self = this;
-
-    if (this.setInitialState) {
-        this.setInitialState = false;
-        callback();
-        return;
-    }
-
-    if (this.setFromLoxone) {
-        callback();
-        return;
-    }
-
+	
     var command = (value == '1') ? this.onCommand() : 'Off';
     this.log("[switch] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);

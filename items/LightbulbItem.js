@@ -12,7 +12,7 @@ LightbulbItem.prototype.getOtherServices = function() {
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemState.bind(this))
         .on('get', this.getItemState.bind(this))
-        .setValue(this.currentState == '1');
+        .updateValue(this.currentState == '1');
 
     return otherService;
 };

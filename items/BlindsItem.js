@@ -57,43 +57,36 @@ BlindsItem.prototype.callBack = function(value) {
     this.currentPosition = value;
 
     //also make sure this change is directly communicated to HomeKit
-    this.setFromLoxone = true;
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.PositionState)
-        .setValue(ps);
+        .updateValue(ps);
 
      this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.TargetPosition)
-        .setValue(parseInt(this.targetPosition));
+        .updateValue(parseInt(this.targetPosition));
 
     this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.CurrentPosition)
-        .setValue(value,
-            function() {
-                this.setFromLoxone = false;
-            }.bind(this));
+        .updateValue(value);
 
 };
 
 BlindsItem.prototype.getOtherServices = function() {
 
-    //setting variable to skip update for intial value
-    this.setInitialState = true;
-
     var otherService = new this.homebridge.hap.Service.WindowCovering();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentPosition)
         .on('get', this.getItemCurrentPosition.bind(this))
-        .setValue(this.currentPosition);
+        .updateValue(this.currentPosition);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.TargetPosition)
         .on('set', this.setItem.bind(this))
         .on('get', this.getItemTargetPosition.bind(this))
-        .setValue(this.currentPosition);
+        .updateValue(this.currentPosition);
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.PositionState)
         .on('get', this.getItemPositionState.bind(this))
-        .setValue(this.positionState);
+        .updateValue(this.positionState);
 
     return otherService;
 };
@@ -113,20 +106,7 @@ BlindsItem.prototype.getItemCurrentPosition = function(callback) {
 BlindsItem.prototype.setItem = function(value, callback) {
 
     //sending new state (pct closed) to loxone
-    //added some logic to prevent a loop when the change because of external event captured by callback
-
     var self = this;
-
-    if (this.setInitialState) {
-        this.setInitialState = false;
-        callback();
-        return;
-    }
-
-    if (this.setFromLoxone) {
-        callback();
-        return;
-    }
 
     //set a flag that we're in control. this way we'll know if the action is coming from Homekit or from external actor (eg Loxone app)
     //this flag is removed after 20 seconds (increase if you have really long or slow blinds ;)
@@ -143,7 +123,7 @@ BlindsItem.prototype.setItem = function(value, callback) {
         //reverse again the value
         command = "ManualPosition/" + (100 - value);
     }
-    this.log("[BLINDS] iOS - send message to " + this.name + ": " + command);
+    this.log("[blinds] iOS - send message to " + this.name + ": " + command);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 
