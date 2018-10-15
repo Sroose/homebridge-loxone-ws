@@ -18,6 +18,7 @@ exports.DoorBell = require('../items/DoorBellItem.js');
 exports.MotionSensor = require('../items/MotionSensorItem.js');
 exports.ContactSensor = require('../items/ContactSensorItem.js');
 exports.LightSensor = require('../items/LightSensorItem.js');
+exports.Alarm = require('../items/Alarm.js');
 
 exports.Factory = function(LoxPlatform, homebridge) {
     this.platform = LoxPlatform;
@@ -70,7 +71,7 @@ exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
                 // https://github.com/nfarina/homebridge/issues/509
                 this.log("Platform - Accessory count limit (100) exceeded so skipping: '" + this.itemList[key].name + "' of type " + this.itemList[key].type + " was skipped.");
             } else {
-                
+
                 var keyToLookup = key;
                 if (keyToLookup.indexOf('/') > -1) {
                     keyToLookup = keyToLookup.split('/')[0];
@@ -79,11 +80,11 @@ exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
                 var control = this.itemList[keyToLookup];
 
                 var controlRoom = null;
-				
+
 				if (this.platform.rooms.length == 0) {
 					//Show all rooms
 					accessoryList.push(accessory);
-					
+
 				} else {
 					//Filter rooms
 					if (control.room) {
