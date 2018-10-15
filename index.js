@@ -29,7 +29,8 @@ module.exports = function(homebridge) {
         Utility.addSupportTo(ItemFactory.Gate, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.DoorBell, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Jalousie, ItemFactory.AbstractItem);
-		Utility.addSupportTo(ItemFactory.TimedSwitch, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.TimedSwitch, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.Alarm, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Switch, ItemFactory.AbstractItem);
             //Add childs of switch
             Utility.addSupportTo(ItemFactory.Lightbulb, ItemFactory.Switch);
@@ -60,13 +61,13 @@ function LoxPlatform(log, config) {
         this.rooms = config["rooms"];
     } else {
         this.rooms =[];
-    } 
+    }
 	this.log(typeof this.rooms);
     if (this.config['moodSwitches']) {
         this.moodSwitches = config["moodSwitches"];
     } else {
         this.moodSwitches = 'none';
-    } 
+    }
 
     //Also make a WS connection
     this.ws = new WSListener(platform);
@@ -92,7 +93,3 @@ LoxPlatform.prototype.accessories = function(callback) {
         })
     },8000);
 };
-
-
-
-
