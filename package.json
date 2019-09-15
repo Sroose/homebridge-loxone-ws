@@ -25,9 +25,8 @@
     "homebridge": ">=0.2.0"
   },
   "dependencies": {
-    "node-lox-ws-api": "^0.4.3",
-    "request": "^2.83.0",
-    "ws": "^3.3.3"
+    "lxcommunicator": "^1.0.1",
+    "request": "^2.83.0"
   },
   "homepage": "https://github.com/Sroose/homebridge-loxone-ws#readme"
 }

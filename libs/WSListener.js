@@ -1,8 +1,14 @@
 "use strict";
 
-var LoxoneWebSocket = require('node-lox-ws-api');
+var LxCommunicator = require('lxcommunicator'),
+    uuid = getUUID(),
+    deviceInfo = require('os').hostname(),
+    WebSocketConfig = LxCommunicator.WebSocketConfig,
+    config = new WebSocketConfig(WebSocketConfig.protocol.WS, uuid, deviceInfo, WebSocketConfig.permission.APP, false);
 
 var WSListener = function(platform) {
+    config.delegate = this;
+
     this.ws = undefined;
     this.log = platform.log;
 
@@ -24,99 +30,20 @@ WSListener.prototype.startListener = function () {
 
     if (typeof this.ws == 'undefined') {
         console.log("New WS: " + this.host + ":" + this.port);
-        this.ws = new LoxoneWebSocket(this.host + ":" + this.port, this.username, this.password, true, 'Token-Enc');
-        this.ws.connect();
+        this.ws = new LxCommunicator.WebSocket(config);
+        this.ws.open(this.host + ":" + this.port, this.username, this.password).then(function () {
+            // Send a command, handle the response as you wish
+            self.ws.send("jdev/sps/enablebinstatusupdate").then(function (respons) {
+                self.log("LOXONE WS: Successfully executed '" + respons.LL.control + "' with code " + respons.LL.Code + " and value " + respons.LL.value);
+            });
+        }, function (e) {
+            self.ws = undefined;
+            self.log("LOXONE WS: connection failed, reconnecting...");
+            setTimeout(function () {
+                self.startListener();
+            }, 10000);
+        });
     }
-
-    this.ws.on('close_failed', function() {
-        self.log("LOXONE WS: close failed");
-    });
-
-    this.ws.on('connect', function() {
-        self.log("LOXONE WS: connect");
-    });
-
-    this.ws.on('connect_failed', function() {
-      //throw new Error("LOXONE WS: connect failed");
-      //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
-      self.log("LOXONE WS: connection failed, reconnecting...");
-      setTimeout(function(){ self.ws.connect(); }, 10000);
-    });
-
-    this.ws.on('connection_error', function(error) {
-      //throw new Error("LOXONE WS: connection error: " + error);
-      //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
-      self.log("LOXONE WS: connection error, reconnecting..." + error);
-      setTimeout(function(){ self.ws.connect(); }, 10000);
-    });
-
-    this.ws.on('send', function(message) {
-        //self.log("LOXONE WS: message: "+ message);
-    });
-
-    this.ws.on('handle_message', function(message) {
-        //self.log("LOXONE WS: handle message: " + JSON.stringify(message));
-    });
-
-    this.ws.on('message_header', function(message) {
-        //self.log("LOXONE WS: message header: " + JSON.stringify(message));
-    });
-
-    this.ws.on('message_text', function(message) {
-        //self.log("LOXONE WS: message text " + message);
-    });
-
-    this.ws.on('message_file', function(message) {
-        //self.log("LOXONE WS: message file " + message);
-    });
-
-    this.ws.on('update_event_value', function(uuid, message) {
-        //self.log("LOXONE WS: update value " + uuid + ":" + message);
-        self.uuidCache[uuid] = message;
-        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
-                self.uuidCallbacks[uuid][r](message);
-            }
-        }
-    });
-
-    this.ws.on('update_event_text', function(uuid, message) {
-        //self.log("LOXONE WS: update event text " + uuid + ":" + message);
-        self.uuidCache[uuid] = message;
-        //self.log('cache now contains ' + Object.keys(self.uuidCache).length + ' items');
-        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
-                self.uuidCallbacks[uuid][r](message);
-            }
-        }
-    });
-
-    this.ws.on('update_event_daytimer', function(uuid, message) {
-        //self.log("LOXONE WS: update event timer " + uuid + ":" + message);
-        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
-                self.uuidCallbacks[uuid][r](message);
-            }
-        }
-    });
-
-    this.ws.on('update_event_weather', function(uuid, message) {
-        //self.log("LOXONE WS: update event weather " + uuid + ":" + message);
-        if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
-                self.uuidCallbacks[uuid][r](message);
-            }
-        }
-    });
-
-    this.ws.on('message_invalid', function(message) {
-        self.log("LOXONE WS: message invalid " + message);
-    });
-
-    this.ws.on('keepalive', function(time) {
-        self.log("LOXONE WS: keepalive " + time);
-    });
-
 };
 
 WSListener.prototype.registerListenerForUUID = function (uuid, callback) {
@@ -137,11 +64,59 @@ WSListener.prototype.registerListenerForUUID = function (uuid, callback) {
 };
 
 WSListener.prototype.sendCommand = function (uuid, command) {
-    this.ws.send_cmd(uuid, command);
+    this.ws.send("jdev/sps/io/" + uuid + "/" + command);
 };
 
 WSListener.prototype.getLastCachedValue = function (uuid) {
     return this.uuidCache[uuid];
 };
+
+// Delegate methods from LxCommunicator
+WSListener.prototype.socketOnConnectionClosed = function socketOnConnectionClosed(socket, code) {
+    switch (code) {
+        case LxCommunicator.SupportCode.WEBSOCKET_OUT_OF_SERVICE:
+        case LxCommunicator.SupportCode.WEBSOCKET_CLOSE:
+        case LxCommunicator.SupportCode.WEBSOCKET_TIMEOUT:
+            this.log("LOXONE WS: Miniserver is rebooting, reload structure after it is reachable again!");
+            this.startListener();
+            break;
+        default:
+            this.log("LOXONE WS: Websocket has been closed with code: " + code);
+    }
+};
+
+WSListener.prototype.socketOnEventReceived = function socketOnEventReceived(socket, events, type) {
+    var key = null,
+        payload = null;
+    // We only need to handle value and text events!
+    if (type === LxCommunicator.BinaryEvent.Type.EVENT) {
+        key = "value";
+    } else if (type === LxCommunicator.BinaryEvent.Type.EVENTTEXT) {
+        key = "text";
+    }
+    if (key) {
+        events.forEach(function(event) {
+            payload = event[key];
+            if (payload !== undefined) {
+                if(typeof this.uuidCallbacks[event.uuid] != 'undefined') {
+                    for (var r = 0; r < this.uuidCallbacks[event.uuid].length; r++) {
+                        this.log("Got state " + event.uuid + " -> " + payload);
+                        this.uuidCallbacks[event.uuid][r](payload);
+                    }
+                }
+            }
+        }.bind(this));
+    }
+};
+
+//=======================================================================================
+// Helper functions
+function getUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
+//=======================================================================================
 
 module.exports = WSListener;
