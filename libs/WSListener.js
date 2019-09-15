@@ -64,7 +64,7 @@ WSListener.prototype.registerListenerForUUID = function (uuid, callback) {
 };
 
 WSListener.prototype.sendCommand = function (uuid, command) {
-    self.ws.send("jdev/sps/io/" + uuid + "/" + command);
+    this.ws.send("jdev/sps/io/" + uuid + "/" + command);
 };
 
 WSListener.prototype.getLastCachedValue = function (uuid) {
