@@ -1,4 +1,4 @@
-# homebridge-loxone-ws
+# homebridge-loxone-ws-adv
 Websocket based Loxone plugin for homebridge
 
 This is a Loxone plugin for [Homebridge](https://github.com/nfarina/homebridge)
@@ -26,11 +26,11 @@ Follow all the installation steps there.
 Install the plugin through npm or download the files from here.
 
 ```sh
-$ sudo npm install -g https://github.com/Lumoc/homebridge-loxone-ws
+$ sudo npm install -g homebridge-loxone-ws-adv
 ```
 Or update to latest version when already installed:
 ```sh
-$ sudo npm update -g https://github.com/Lumoc/homebridge-loxone-ws
+$ sudo npm update -g homebridge-loxone-ws-adv
 ```
 
 Note: the plugin requires extra node modules, but these should be automatically installed:
