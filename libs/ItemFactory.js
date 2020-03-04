@@ -234,7 +234,7 @@ exports.Factory.prototype.traverseSitemap = function(jsonSitmap, factory) {
                         }
 
                         // Append the room name to the name for better identification
-                        control.name += (" in " + controlRoom.name);
+                        //control.name += (" in " + controlRoom.name);
                         control.roomname = controlRoom.name;
                         factory.itemList[controlUuid] = control;
 
