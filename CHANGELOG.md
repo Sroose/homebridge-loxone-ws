@@ -7,7 +7,7 @@
 - [PR20](https://github.com/Sroose/homebridge-loxone-ws/pull/20) "ColorpickerItem fixes"
 - [PR28](https://github.com/Sroose/homebridge-loxone-ws/pull/28) "Fix bug in DimmerItem that tries to getItemState before connection established"
 
-**Bugfixes:**
+**Bugfixes: Test from HIHIPTO**
 
 - [Issue 13](https://github.com/Sroose/homebridge-loxone-ws/issues/13) "No actual responses from loxone miniserver" fixed
 - [Issue 15](https://github.com/Sroose/homebridge-loxone-ws/issues/15) "works incorrectly after a while" fixed

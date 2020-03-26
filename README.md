@@ -1,5 +1,6 @@
 # homebridge-loxone-ws
 Websocket based Loxone plugin for homebridge
+test from HIHIPTO
 
 This is a Loxone plugin for [Homebridge](https://github.com/nfarina/homebridge)
 The plugin will automatically retrieve and communicate with all these items from your Loxone setup:
@@ -76,7 +77,7 @@ I strongly suggest to create a dedicate Loxone user through Loxone Config (eg ho
 **rooms**
 
 To specify an array of interested rooms to filter on. If empty or not given, all elements are used.
-Eg: specifying "rooms" : ["Kitchen", "Bedroom"] will limit your bridge to only elements from those 2 rooms. 
+Eg: specifying "rooms" : ["Kitchen", "Bedroom"] will limit your bridge to only elements from those 2 rooms.
 
 **moodSwitches**
 
