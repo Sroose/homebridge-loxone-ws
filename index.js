@@ -13,7 +13,7 @@ module.exports = function(homebridge) {
     Accessory = homebridge.platformAccessory;
 
     // Keep refference to the passes API object
-    Homebridge = new homebridge;
+    Homebridge = homebridge;
 
     //Add inheritance of the AbstractItem to the Accessory object
     Utility.addSupportTo(ItemFactory.AbstractItem, Accessory);
