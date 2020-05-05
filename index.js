@@ -10,7 +10,7 @@ module.exports = function(homebridge) {
     console.log("homebridge API version: " + homebridge.version);
 
     // Accessory must be created from PlatformAccessory Constructor
-    Accessory = homebridge.platformAccessory;
+    Accessory = new homebridge.platformAccessory;
 
     // Keep refference to the passes API object
     Homebridge = new homebridge;
