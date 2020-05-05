@@ -1,46 +1,46 @@
-import request from "request";
+"use strict";
 
-class ContactSensorItem {
-    constructor(widget, platform, homebridge) {
+var request = require("request");
 
-        this.platform = platform;
-        this.uuidAction = widget.uuidAction;
-        this.isClosed = false;
+var ContactSensorItem = function(widget,platform,homebridge) {
 
-        ContactSensorItem.super_.call(this, widget,platform,homebridge);
-    }
+    this.platform = platform;
+    this.uuidAction = widget.uuidAction;
+    this.isClosed = false;
 
-    // Register a listener to be notified of changes in this items value
-    initListener() {
-        this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
-    }
+    ContactSensorItem.super_.call(this, widget,platform,homebridge);
+};
 
-    callBack(value) {
-        //function that gets called by the registered ws listener
+// Register a listener to be notified of changes in this items value
+ContactSensorItem.prototype.initListener = function() {
+    this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
+};
 
-        console.log(`Got new state for ContactSensor: ${value}`);
+ContactSensorItem.prototype.callBack = function(value) {
+    //function that gets called by the registered ws listener
 
-        this.isClosed = value;
+    console.log("Got new state for ContactSensor: " + value);
 
-        //also make sure this change is directly communicated to HomeKit
-        this.otherService
-            .getCharacteristic(this.homebridge.hap.Characteristic.ContactSensorState)
-            .setValue(this.isClosed);
-    }
+    this.isClosed = value;
 
-    getOtherServices() {
-        const otherService = new this.homebridge.hap.Service.ContactSensor();
+    //also make sure this change is directly communicated to HomeKit
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.ContactSensorState)
+        .setValue(this.isClosed);
+};
 
-        otherService.getCharacteristic(this.homebridge.hap.Characteristic.ContactSensorState)
-            .on('get', this.getItemState.bind(this))
-            .setValue(this.isClosed);
+ContactSensorItem.prototype.getOtherServices = function() {
+    var otherService = new this.homebridge.hap.Service.ContactSensor();
 
-        return otherService;
-    }
+    otherService.getCharacteristic(this.homebridge.hap.Characteristic.ContactSensorState)
+        .on('get', this.getItemState.bind(this))
+        .setValue(this.isClosed);
 
-    getItemState(callback) {
-       callback(undefined, this.isClosed);
-    }
-}
+    return otherService;
+};
 
-export default ContactSensorItem;
+ContactSensorItem.prototype.getItemState = function(callback) {
+   callback(undefined, this.isClosed);
+};
+
+module.exports = ContactSensorItem;

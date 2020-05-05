@@ -1,43 +1,43 @@
-import request from "request";
+"use strict";
 
-class HumiditySensorItem {
-    constructor(widget, platform, homebridge) {
+var request = require("request");
 
-        this.platform = platform;
-        this.uuidAction = widget.uuidAction;
-        this.currentHumidity = undefined;
+var HumiditySensorItem = function(widget,platform,homebridge) {
 
-        HumiditySensorItem.super_.call(this, widget,platform,homebridge);
-    }
+    this.platform = platform;
+    this.uuidAction = widget.uuidAction;
+    this.currentHumidity = undefined;
 
-    // Register a listener to be notified of changes in this items value
-    initListener() {
-        this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
-    }
+    HumiditySensorItem.super_.call(this, widget,platform,homebridge);
+};
 
-    callBack(value) {
-        //function that gets called by the registered ws listener
-        this.currentHumidity = value;
+// Register a listener to be notified of changes in this items value
+HumiditySensorItem.prototype.initListener = function() {
+    this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
+};
 
-        //also make sure this change is directly communicated to HomeKit
-        this.otherService
-            .getCharacteristic(this.homebridge.hap.Characteristic.CurrentRelativeHumidity)
-            .setValue(this.currentHumidity);
-    }
+HumiditySensorItem.prototype.callBack = function(value) {
+    //function that gets called by the registered ws listener
+    this.currentHumidity = value;
 
-    getOtherServices() {
-        const otherService = new this.homebridge.hap.Service.HumiditySensor();
+    //also make sure this change is directly communicated to HomeKit
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.CurrentRelativeHumidity)
+        .setValue(this.currentHumidity);
+};
 
-        otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentRelativeHumidity)
-            .on('get', this.getItemState.bind(this))
-            .setValue(this.currentHumidity);
+HumiditySensorItem.prototype.getOtherServices = function() {
+    var otherService = new this.homebridge.hap.Service.HumiditySensor();
 
-        return otherService;
-    }
+    otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentRelativeHumidity)
+        .on('get', this.getItemState.bind(this))
+        .setValue(this.currentHumidity);
 
-    getItemState(callback) {
-       callback(undefined, this.currentHumidity);
-    }
-}
+    return otherService;
+};
 
-export default HumiditySensorItem;
+HumiditySensorItem.prototype.getItemState = function(callback) {
+   callback(undefined, this.currentHumidity);
+};
+
+module.exports = HumiditySensorItem;

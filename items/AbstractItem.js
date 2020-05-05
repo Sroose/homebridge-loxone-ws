@@ -1,48 +1,48 @@
-import WSListener from '../libs/WSListener.js';
+"use strict";
 
-class AbstractItem {
-    constructor(widget, platform, homebridge) {
-        this.platform = platform;
-        this.widget =  widget;
-        this.homebridge = homebridge;
-        this.log = this.platform.log;
-        this.name = widget.name;
-        this.UUID = homebridge.hap.uuid.generate(String(widget.uuidAction));
+var WSListener = require('../libs/WSListener.js');
 
-        // provide explicit UUID to prevent automatic UUID generation by homebridge (which would fail because of possibly equal item name)
-        this.uuid_base = this.UUID;
+var AbstractItem = function(widget,platform,homebridge) {
+    this.platform = platform;
+    this.widget =  widget;
+    this.homebridge = homebridge;
+    this.log = this.platform.log;
+    this.name = widget.name;
+    this.UUID = homebridge.hap.uuid.generate(String(widget.uuidAction));
+    
+    // provide explicit UUID to prevent automatic UUID generation by homebridge (which would fail because of possibly equal item name)
+    this.uuid_base = this.UUID;
 
-        //other variables used by child classes
-        this.setFromLoxone = false;
+    //other variables used by child classes
+    this.setFromLoxone = false;
+    
+	// console.log("Generating new homebridge accessory '" + this.name + "' with UUID: " + this.UUID + " from accessory with ID: " + widget.uuidAction);
 
-        // console.log("Generating new homebridge accessory '" + this.name + "' with UUID: " + this.UUID + " from accessory with ID: " + widget.uuidAction);
+    //Add as ACCESSORY (parent class)
+    AbstractItem.super_.call(this, this.name, this.UUID);
 
-        //Add as ACCESSORY (parent class)
-        AbstractItem.super_.call(this, this.name, this.UUID);
+};
 
-    }
+AbstractItem.prototype.getServices = function() {
+    this.informationService = this.getInformationServices();
+    this.otherService = this.getOtherServices();
+    this.initListener();
+    return [this.informationService, this.otherService];
+};
 
-    getServices() {
-        this.informationService = this.getInformationServices();
-        this.otherService = this.getOtherServices();
-        this.initListener();
-        return [this.informationService, this.otherService];
-    }
+AbstractItem.prototype.getOtherServices = function() {
+    return null;
+};
 
-    getOtherServices() {
-        return null;
-    }
+AbstractItem.prototype.getInformationServices = function() {
+    var informationService = new this.homebridge.hap.Service.AccessoryInformation();
 
-    getInformationServices() {
-        const informationService = new this.homebridge.hap.Service.AccessoryInformation();
+    informationService
+        .setCharacteristic(this.homebridge.hap.Characteristic.Manufacturer, 'Loxone')
+        .setCharacteristic(this.homebridge.hap.Characteristic.Model, this.name)
+        .setCharacteristic(this.homebridge.hap.Characteristic.SerialNumber, this.widget.uuidAction)
+        .setCharacteristic(this.homebridge.hap.Characteristic.Name, this.name);
+    return informationService;
+};
 
-        informationService
-            .setCharacteristic(this.homebridge.hap.Characteristic.Manufacturer, 'Loxone')
-            .setCharacteristic(this.homebridge.hap.Characteristic.Model, this.name)
-            .setCharacteristic(this.homebridge.hap.Characteristic.SerialNumber, this.widget.uuidAction)
-            .setCharacteristic(this.homebridge.hap.Characteristic.Name, this.name);
-        return informationService;
-    }
-}
-
-export default AbstractItem;
+module.exports = AbstractItem;

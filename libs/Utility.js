@@ -1,15 +1,17 @@
-import {inherits} from "util";
-const exports = module.exports = {};
+'use strict';
 
-export function addInheritance(subclass, superclass) {
-    const proto = subclass.prototype;
+var inherits = require("util").inherits;
+var exports = module.exports = {};
+
+exports.addInheritance = function(subclass, superclass) {
+    var proto = subclass.prototype;
     inherits(subclass, superclass);
     subclass.prototype.parent = superclass.prototype;
-    for (const a in proto) {
+    for (var a in proto) {
         subclass.prototype[a] = proto[a];
     }
-}
+};
 
-export function addSupportTo(subclass, superclass) {
+exports.addSupportTo = function(subclass, superclass) {
     exports.addInheritance(subclass,superclass);
-}
+};

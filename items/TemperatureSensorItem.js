@@ -1,43 +1,43 @@
-import request from "request";
+"use strict";
 
-class TemperatureSensorItem {
-    constructor(widget, platform, homebridge) {
+var request = require("request");
 
-        this.platform = platform;
-        this.uuidAction = widget.uuidAction;
-        this.currentTemperature = undefined;
+var TemperatureSensorItem = function(widget,platform,homebridge) {
 
-        TemperatureSensorItem.super_.call(this, widget,platform,homebridge);
-    }
+    this.platform = platform;
+    this.uuidAction = widget.uuidAction;
+    this.currentTemperature = undefined;
 
-    // Register a listener to be notified of changes in this items value
-    initListener() {
-        this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
-    }
+    TemperatureSensorItem.super_.call(this, widget,platform,homebridge);
+};
 
-    callBack(value) {
-        //function that gets called by the registered ws listener
-        this.currentTemperature = value;
+// Register a listener to be notified of changes in this items value
+TemperatureSensorItem.prototype.initListener = function() {
+    this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
+};
 
-        //also make sure this change is directly communicated to HomeKit
-        this.otherService
-            .getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
-            .setValue(this.currentTemperature);
-    }
+TemperatureSensorItem.prototype.callBack = function(value) {
+    //function that gets called by the registered ws listener
+    this.currentTemperature = value;
 
-    getOtherServices() {
-        const otherService = new this.homebridge.hap.Service.TemperatureSensor();
+    //also make sure this change is directly communicated to HomeKit
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
+        .setValue(this.currentTemperature);
+};
 
-        otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
-            .on('get', this.getItemState.bind(this))
-            .setValue(this.currentTemperature);
+TemperatureSensorItem.prototype.getOtherServices = function() {
+    var otherService = new this.homebridge.hap.Service.TemperatureSensor();
 
-        return otherService;
-    }
+    otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
+        .on('get', this.getItemState.bind(this))
+        .setValue(this.currentTemperature);
 
-    getItemState(callback) {
-       callback(undefined, this.currentTemperature);
-    }
-}
+    return otherService;
+};
 
-export default TemperatureSensorItem;
+TemperatureSensorItem.prototype.getItemState = function(callback) {
+   callback(undefined, this.currentTemperature);
+};
+
+module.exports = TemperatureSensorItem;

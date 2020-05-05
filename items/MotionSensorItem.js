@@ -1,46 +1,46 @@
-import request from "request";
+"use strict";
 
-class MotionSensorItem {
-    constructor(widget, platform, homebridge) {
+var request = require("request");
 
-        this.platform = platform;
-        this.uuidAction = widget.uuidAction;
-        this.motiondetected = false;
+var MotionSensorItem = function(widget,platform,homebridge) {
 
-        MotionSensorItem.super_.call(this, widget,platform,homebridge);
-    }
+    this.platform = platform;
+    this.uuidAction = widget.uuidAction;
+    this.motiondetected = false;
 
-    // Register a listener to be notified of changes in this items value
-    initListener() {
-        this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
-    }
+    MotionSensorItem.super_.call(this, widget,platform,homebridge);
+};
 
-    callBack(value) {
-        //function that gets called by the registered ws listener
+// Register a listener to be notified of changes in this items value
+MotionSensorItem.prototype.initListener = function() {
+    this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
+};
 
-        //console.log("Got new state for Motion: " + value);
+MotionSensorItem.prototype.callBack = function(value) {
+    //function that gets called by the registered ws listener
 
-        this.motiondetected = value;
+    //console.log("Got new state for Motion: " + value);
 
-        //also make sure this change is directly communicated to HomeKit
-        this.otherService
-            .getCharacteristic(this.homebridge.hap.Characteristic.MotionDetected)
-            .setValue(this.motiondetected);
-    }
+    this.motiondetected = value;
 
-    getOtherServices() {
-        const otherService = new this.homebridge.hap.Service.MotionSensor();
+    //also make sure this change is directly communicated to HomeKit
+    this.otherService
+        .getCharacteristic(this.homebridge.hap.Characteristic.MotionDetected)
+        .setValue(this.motiondetected);
+};
 
-        otherService.getCharacteristic(this.homebridge.hap.Characteristic.MotionDetected)
-            .on('get', this.getItemState.bind(this))
-            .setValue(this.motiondetected);
+MotionSensorItem.prototype.getOtherServices = function() {
+    var otherService = new this.homebridge.hap.Service.MotionSensor();
 
-        return otherService;
-    }
+    otherService.getCharacteristic(this.homebridge.hap.Characteristic.MotionDetected)
+        .on('get', this.getItemState.bind(this))
+        .setValue(this.motiondetected);
 
-    getItemState(callback) {
-       callback(undefined, this.motiondetected);
-    }
-}
+    return otherService;
+};
 
-export default MotionSensorItem;
+MotionSensorItem.prototype.getItemState = function(callback) {
+   callback(undefined, this.motiondetected);
+};
+
+module.exports = MotionSensorItem;
