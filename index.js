@@ -1,13 +1,12 @@
-'use strict';
+let Homebridge;
+let Accessory;
+import request from "request";
+import ItemFactory from './libs/ItemFactory.js';
+import Utility from './libs/Utility.js';
+import WSListener from './libs/WSListener.js';
 
-var Homebridge, Accessory;
-var request = require("request");
-var ItemFactory = require('./libs/ItemFactory.js');
-var Utility = require('./libs/Utility.js');
-var WSListener = require('./libs/WSListener.js');
-
-module.exports = function(homebridge) {
-    console.log("homebridge API version: " + homebridge.version);
+export default homebridge => {
+    console.log(`homebridge API version: ${homebridge.version}`);
 
     // Accessory must be created from PlatformAccessory Constructor
     Accessory = homebridge.platformAccessory;
@@ -39,59 +38,61 @@ module.exports = function(homebridge) {
 
 // Platform constructor
 // config may be null
-function LoxPlatform(log, config) {
-    //log("LoxPlatform Init");
-    var platform = this;
-    this.log = log;
-    this.config = config;
-    this.protocol = "http";
+class LoxPlatform {
+    constructor(log, config) {
+        //log("LoxPlatform Init");
+        const platform = this;
+        this.log = log;
+        this.config = config;
+        this.protocol = "http";
 
-    if (!this.config['host']) throw new Error("Configuration missing: loxone host (please provide the IP address here)");
-    if (!this.config['port']) throw new Error("Configuration missing: loxone port (if default port, specify 7777)");
-    if (!this.config['username']) throw new Error("Configuration missing: loxone username");
-    if (!this.config['password']) throw new Error("Configuration missing: loxone password");
-    if (!this.config['rooms']) this.log("Info: rooms array not configured. Adding every room.");
+        if (!this.config['host']) throw new Error("Configuration missing: loxone host (please provide the IP address here)");
+        if (!this.config['port']) throw new Error("Configuration missing: loxone port (if default port, specify 7777)");
+        if (!this.config['username']) throw new Error("Configuration missing: loxone username");
+        if (!this.config['password']) throw new Error("Configuration missing: loxone password");
+        if (!this.config['rooms']) this.log("Info: rooms array not configured. Adding every room.");
 
-    this.host           = config["host"];
-    this.port           = config["port"];
-    this.username       = config["username"];
-    this.password       = config["password"];
-	if (this.config['rooms']) {
-        this.rooms = config["rooms"];
-    } else {
-        this.rooms =[];
-    } 
-	this.log(typeof this.rooms);
-    if (this.config['moodSwitches']) {
-        this.moodSwitches = config["moodSwitches"];
-    } else {
-        this.moodSwitches = 'none';
-    } 
+        this.host           = config["host"];
+        this.port           = config["port"];
+        this.username       = config["username"];
+        this.password       = config["password"];
+        if (this.config['rooms']) {
+            this.rooms = config["rooms"];
+        } else {
+            this.rooms =[];
+        }
+        this.log(typeof this.rooms);
+        if (this.config['moodSwitches']) {
+            this.moodSwitches = config["moodSwitches"];
+        } else {
+            this.moodSwitches = 'none';
+        }
 
-    //Also make a WS connection
-    this.ws = new WSListener(platform);
+        //Also make a WS connection
+        this.ws = new WSListener(platform);
+    }
+
+    accessories(callback) {
+        const that = this;
+        //this.log("Getting Loxone configuration.");
+        const itemFactory = new ItemFactory.Factory(this,Homebridge);
+        const url = itemFactory.sitemapUrl();
+        this.log("Platform - Waiting 8 seconds until initial state is retrieved via WebSocket.");
+        setTimeout(() => {
+            that.log(`Platform - Retrieving initial config from ${url}`);
+            request.get({
+                url,
+                json: true
+            }, (err, {statusCode}, json) => {
+                if (!err && statusCode === 200) {
+                    callback(itemFactory.parseSitemap(json));
+                } else {
+                    that.log("Platform - There was a problem connecting to Loxone.");
+                }
+            })
+        },8000);
+    }
 }
-
-LoxPlatform.prototype.accessories = function(callback) {
-    var that = this;
-    //this.log("Getting Loxone configuration.");
-    var itemFactory = new ItemFactory.Factory(this,Homebridge);
-    var url = itemFactory.sitemapUrl();
-    this.log("Platform - Waiting 8 seconds until initial state is retrieved via WebSocket.");
-    setTimeout(function(){
-        that.log("Platform - Retrieving initial config from " + url);
-        request.get({
-            url: url,
-            json: true
-        }, function(err, response, json) {
-            if (!err && response.statusCode === 200) {
-                callback(itemFactory.parseSitemap(json));
-            } else {
-                that.log("Platform - There was a problem connecting to Loxone.");
-            }
-        })
-    },8000);
-};
 
 
 

@@ -1,46 +1,46 @@
-"use strict";
+import request from "request";
 
-var request = require("request");
+class LightSensorItem {
+    constructor(widget, platform, homebridge) {
 
-var LightSensorItem = function(widget,platform,homebridge) {
+        this.platform = platform;
+        this.uuidAction = widget.uuidAction;
+        this.lightlevel = 0;
 
-    this.platform = platform;
-    this.uuidAction = widget.uuidAction;
-    this.lightlevel = 0;
+        LightSensorItem.super_.call(this, widget, platform, homebridge);
+    }
 
-    LightSensorItem.super_.call(this, widget, platform, homebridge);
-};
+    // Register a listener to be notified of changes in this items value
+    initListener() {
+        this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
+    }
 
-// Register a listener to be notified of changes in this items value
-LightSensorItem.prototype.initListener = function() {
-    this.platform.ws.registerListenerForUUID(this.uuidAction, this.callBack.bind(this));
-};
+    callBack(value) {
+        //function that gets called by the registered ws listener
 
-LightSensorItem.prototype.callBack = function(value) {
-    //function that gets called by the registered ws listener
+        //console.log("Got new state for Light Level: " + value);
 
-    //console.log("Got new state for Light Level: " + value);
+        this.lightlevel = value;
 
-    this.lightlevel = value;
+        //also make sure this change is directly communicated to HomeKit
+        this.otherService
+            .getCharacteristic(this.homebridge.hap.Characteristic.CurrentAmbientLightLevel)
+            .setValue(this.lightlevel);
+    }
 
-    //also make sure this change is directly communicated to HomeKit
-    this.otherService
-        .getCharacteristic(this.homebridge.hap.Characteristic.CurrentAmbientLightLevel)
-        .setValue(this.lightlevel);
-};
+    getOtherServices() {
+        const otherService = new this.homebridge.hap.Service.LightSensor();
 
-LightSensorItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.LightSensor();
+        otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentAmbientLightLevel)
+            .on('get', this.getItemState.bind(this))
+            .setValue(this.lightlevel);
 
-    otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentAmbientLightLevel)
-        .on('get', this.getItemState.bind(this))
-        .setValue(this.lightlevel);
+        return otherService;
+    }
 
-    return otherService;
-};
+    getItemState(callback) {
+       callback(undefined, this.lightlevel);
+    }
+}
 
-LightSensorItem.prototype.getItemState = function(callback) {
-   callback(undefined, this.lightlevel);
-};
-
-module.exports = LightSensorItem;
+export default LightSensorItem;

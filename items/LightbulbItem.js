@@ -1,20 +1,20 @@
-"use strict";
+import request from "request";
 
-var request = require("request");
+class LightbulbItem {
+    constructor(widget, platform, homebridge) {
+        LightbulbItem.super_.call(this, widget,platform,homebridge);
+    }
 
-var LightbulbItem = function(widget,platform,homebridge) {
-    LightbulbItem.super_.call(this, widget,platform,homebridge);
-};
+    getOtherServices() {
+        const otherService = new this.homebridge.hap.Service.Lightbulb();
 
-LightbulbItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.Lightbulb();
+        otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
+            .on('set', this.setItemState.bind(this))
+            .on('get', this.getItemState.bind(this))
+            .updateValue(this.currentState == '1');
 
-    otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
-        .on('set', this.setItemState.bind(this))
-        .on('get', this.getItemState.bind(this))
-        .updateValue(this.currentState == '1');
+        return otherService;
+    }
+}
 
-    return otherService;
-};
-
-module.exports = LightbulbItem;
+export default LightbulbItem;

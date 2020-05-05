@@ -1,36 +1,36 @@
-"use strict";
+import request from "request";
 
-var request = require("request");
+class EventItem {
+    constructor(widget, platform, homebridge) {
 
-var EventItem = function(widget,platform,homebridge) {
+        this.platform = platform;
+        this.stateUuid = widget.states.active; //an event always has a state called active, which is the uuid which will receive the event to read
 
-    this.platform = platform;
-    this.stateUuid = widget.states.active; //an event always has a state called active, which is the uuid which will receive the event to read
+        EventItem.super_.call(this, widget,platform,homebridge);
+    }
 
-    EventItem.super_.call(this, widget,platform,homebridge);
-};
+    // Register a listener to be notified of changes in this items value
+    initListener() {
+        this.platform.ws.registerListenerForUUID(this.stateUuid, this.callBack.bind(this));
+    }
 
-// Register a listener to be notified of changes in this items value
-EventItem.prototype.initListener = function() {
-    this.platform.ws.registerListenerForUUID(this.stateUuid, this.callBack.bind(this));
-};
+    callBack(value) {
+        //function that gets called by the registered ws listener
+        //console.log("Got new state for event " + value);
 
-EventItem.prototype.callBack = function(value) {
-    //function that gets called by the registered ws listener
-    //console.log("Got new state for event " + value);
+        //make sure this change is directly communicated to HomeKit
+        this.otherService
+            .getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent)
+            .setValue(value == '1');
+    }
 
-    //make sure this change is directly communicated to HomeKit
-    this.otherService
-        .getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent)
-        .setValue(value == '1');
-};
+    getOtherServices() {
+        const otherService = new this.homebridge.hap.Service.StatelessProgrammableSwitch();
 
-EventItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.StatelessProgrammableSwitch();
+        otherService.getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent);
 
-    otherService.getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent);
+        return otherService;
+    }
+}
 
-    return otherService;
-};
-
-module.exports = EventItem;
+export default EventItem;
