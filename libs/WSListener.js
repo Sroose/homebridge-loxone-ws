@@ -1,8 +1,6 @@
-"use strict";
+const LoxoneWebSocket = require('node-lox-ws-api');
 
-var LoxoneWebSocket = require('node-lox-ws-api');
-
-var WSListener = function(platform) {
+const WSListener = function(platform) {
     this.ws = undefined;
     this.log = platform.log;
 
@@ -20,101 +18,101 @@ var WSListener = function(platform) {
 };
 
 WSListener.prototype.startListener = function () {
-    var self = this;
+    const self = this;
 
     if (typeof this.ws == 'undefined') {
-        console.log("New WS: " + this.host + ":" + this.port);
-        this.ws = new LoxoneWebSocket(this.host + ":" + this.port, this.username, this.password, true, 'Token-Enc');
+        console.log(`New WS: ${this.host}:${this.port}`);
+        this.ws = new LoxoneWebSocket(`${this.host}:${this.port}`, this.username, this.password, true, 'Token-Enc');
         this.ws.connect();
     }
 
-    this.ws.on('close_failed', function() {
+    this.ws.on('close_failed', () => {
         self.log("LOXONE WS: close failed");
     });
 
-    this.ws.on('connect', function() {
+    this.ws.on('connect', () => {
         self.log("LOXONE WS: connect");
     });
 
-    this.ws.on('connect_failed', function() {
+    this.ws.on('connect_failed', () => {
       //throw new Error("LOXONE WS: connect failed");
       //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
       self.log("LOXONE WS: connection failed, reconnecting...");
-      setTimeout(function(){ self.ws.connect(); }, 10000);
+      setTimeout(() => { self.ws.connect(); }, 10000);
     });
 
-    this.ws.on('connection_error', function(error) {
+    this.ws.on('connection_error', error => {
       //throw new Error("LOXONE WS: connection error: " + error);
       //connection can drop sometimes, try to reconnect silently (max once per 10 seconds)
-      self.log("LOXONE WS: connection error, reconnecting..." + error);
-      setTimeout(function(){ self.ws.connect(); }, 10000);
+      self.log(`LOXONE WS: connection error, reconnecting...${error}`);
+      setTimeout(() => { self.ws.connect(); }, 10000);
     });
 
-    this.ws.on('send', function(message) {
+    this.ws.on('send', message => {
         //self.log("LOXONE WS: message: "+ message);
     });
 
-    this.ws.on('handle_message', function(message) {
+    this.ws.on('handle_message', message => {
         //self.log("LOXONE WS: handle message: " + JSON.stringify(message));
     });
 
-    this.ws.on('message_header', function(message) {
+    this.ws.on('message_header', message => {
         //self.log("LOXONE WS: message header: " + JSON.stringify(message));
     });
 
-    this.ws.on('message_text', function(message) {
+    this.ws.on('message_text', message => {
         //self.log("LOXONE WS: message text " + message);
     });
 
-    this.ws.on('message_file', function(message) {
+    this.ws.on('message_file', message => {
         //self.log("LOXONE WS: message file " + message);
     });
 
-    this.ws.on('update_event_value', function(uuid, message) {
+    this.ws.on('update_event_value', (uuid, message) => {
         //self.log("LOXONE WS: update value " + uuid + ":" + message);
         self.uuidCache[uuid] = message;
         if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
+            for (let r = 0; r < self.uuidCallbacks[uuid].length; r++) {
                 self.uuidCallbacks[uuid][r](message);
             }
         }
     });
 
-    this.ws.on('update_event_text', function(uuid, message) {
+    this.ws.on('update_event_text', (uuid, message) => {
         //self.log("LOXONE WS: update event text " + uuid + ":" + message);
         self.uuidCache[uuid] = message;
         //self.log('cache now contains ' + Object.keys(self.uuidCache).length + ' items');
         if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
+            for (let r = 0; r < self.uuidCallbacks[uuid].length; r++) {
                 self.uuidCallbacks[uuid][r](message);
             }
         }
     });
 
-    this.ws.on('update_event_daytimer', function(uuid, message) {
+    this.ws.on('update_event_daytimer', (uuid, message) => {
         //self.log("LOXONE WS: update event timer " + uuid + ":" + message);
         if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
+            for (let r = 0; r < self.uuidCallbacks[uuid].length; r++) {
                 self.uuidCallbacks[uuid][r](message);
             }
         }
     });
 
-    this.ws.on('update_event_weather', function(uuid, message) {
+    this.ws.on('update_event_weather', (uuid, message) => {
         //self.log("LOXONE WS: update event weather " + uuid + ":" + message);
         if(typeof self.uuidCallbacks[uuid] != 'undefined') {
-            for (var r = 0; r < self.uuidCallbacks[uuid].length; r++) {
+            for (let r = 0; r < self.uuidCallbacks[uuid].length; r++) {
                 self.uuidCallbacks[uuid][r](message);
             }
         }
     });
 
-    this.ws.on('message_invalid', function(message) {
-        self.log("LOXONE WS: message invalid " + message);
+    this.ws.on('message_invalid', message => {
+        self.log(`LOXONE WS: message invalid ${message}`);
     });
 
-    this.ws.on('keepalive', function(time) {
-        self.log("LOXONE WS: keepalive " + time);
+    this.ws.on('keepalive', time => {
+        self.log(`LOXONE WS: keepalive ${time}`);
     });
 
 };
@@ -130,7 +128,7 @@ WSListener.prototype.registerListenerForUUID = function (uuid, callback) {
 
     // if we already have a state cached for this uuid, broadcast it to all currently registered callbacks
     if (uuid in this.uuidCache) {
-        for (var r = 0; r < this.uuidCallbacks[uuid].length; r++) {
+        for (let r = 0; r < this.uuidCallbacks[uuid].length; r++) {
             this.uuidCallbacks[uuid][r](this.uuidCache[uuid]);
         }
     }

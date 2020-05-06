@@ -1,8 +1,6 @@
-"use strict";
+const WSListener = require('../libs/WSListener.js');
 
-var WSListener = require('../libs/WSListener.js');
-
-var AbstractItem = function(widget,platform,homebridge) {
+const AbstractItem = function(widget,platform,homebridge) {
     this.platform = platform;
     this.widget =  widget;
     this.homebridge = homebridge;
@@ -30,12 +28,12 @@ AbstractItem.prototype.getServices = function() {
     return [this.informationService, this.otherService];
 };
 
-AbstractItem.prototype.getOtherServices = function() {
+AbstractItem.prototype.getOtherServices = () => {
     return null;
 };
 
 AbstractItem.prototype.getInformationServices = function() {
-    var informationService = new this.homebridge.hap.Service.AccessoryInformation();
+    const informationService = new this.homebridge.hap.Service.AccessoryInformation();
 
     informationService
         .setCharacteristic(this.homebridge.hap.Characteristic.Manufacturer, 'Loxone')

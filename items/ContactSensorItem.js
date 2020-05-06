@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var ContactSensorItem = function(widget,platform,homebridge) {
+const ContactSensorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
@@ -19,7 +17,7 @@ ContactSensorItem.prototype.initListener = function() {
 ContactSensorItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
 
-    console.log("Got new state for ContactSensor: " + value);
+    console.log(`Got new state for ContactSensor: ${value}`);
 
     this.isClosed = value;
 
@@ -30,7 +28,7 @@ ContactSensorItem.prototype.callBack = function(value) {
 };
 
 ContactSensorItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.ContactSensor();
+    const otherService = new this.homebridge.hap.Service.ContactSensor();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.ContactSensorState)
         .on('get', this.getItemState.bind(this))

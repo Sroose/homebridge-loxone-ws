@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var DoorBellItem = function(widget,platform,homebridge) {
+const DoorBellItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.stateUuidActive = widget.states.active;
@@ -17,8 +15,8 @@ DoorBellItem.prototype.initListener = function() {
     this.platform.ws.registerListenerForUUID(this.stateUuidActive, this.callBackActive.bind(this));
 };
 
-DoorBellItem.prototype.callBackActive = function(value) {
-    console.log("Got new state for DoorBell: " + value);
+DoorBellItem.prototype.callBackActive = value => {
+    console.log(`Got new state for DoorBell: ${value}`);
 
     /*
     var new_doorstate = this.currentdoorstate;
@@ -62,7 +60,7 @@ DoorBellItem.prototype.callBackActive = function(value) {
 
 DoorBellItem.prototype.getOtherServices = function() {
 
-    var otherService = new this.homebridge.hap.Service.Doorbell();
+    const otherService = new this.homebridge.hap.Service.Doorbell();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent)
         .on('get', this.getState.bind(this));

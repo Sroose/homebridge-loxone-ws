@@ -1,13 +1,11 @@
-'use strict';
+let Homebridge, Accessory;
+const request = require("request");
+const ItemFactory = require('./libs/ItemFactory.js');
+const Utility = require('./libs/Utility.js');
+const WSListener = require('./libs/WSListener.js');
 
-var Homebridge, Accessory;
-var request = require("request");
-var ItemFactory = require('./libs/ItemFactory.js');
-var Utility = require('./libs/Utility.js');
-var WSListener = require('./libs/WSListener.js');
-
-module.exports = function(homebridge) {
-    console.log("homebridge API version: " + homebridge.version);
+module.exports = homebridge => {
+    console.log(`homebridge API version: ${homebridge.version}`);
 
     // Accessory must be created from PlatformAccessory Constructor
     Accessory = homebridge.platformAccessory;
@@ -41,7 +39,7 @@ module.exports = function(homebridge) {
 // config may be null
 function LoxPlatform(log, config) {
     //log("LoxPlatform Init");
-    var platform = this;
+    const platform = this;
     this.log = log;
     this.config = config;
     this.protocol = "http";
@@ -73,17 +71,17 @@ function LoxPlatform(log, config) {
 }
 
 LoxPlatform.prototype.accessories = function(callback) {
-    var that = this;
+    const that = this;
     //this.log("Getting Loxone configuration.");
-    var itemFactory = new ItemFactory.Factory(this,Homebridge);
-    var url = itemFactory.sitemapUrl();
+    const itemFactory = new ItemFactory.Factory(this,Homebridge);
+    const url = itemFactory.sitemapUrl();
     this.log("Platform - Waiting 8 seconds until initial state is retrieved via WebSocket.");
-    setTimeout(function(){
-        that.log("Platform - Retrieving initial config from " + url);
+    setTimeout(() => {
+        that.log(`Platform - Retrieving initial config from ${url}`);
         request.get({
-            url: url,
+            url,
             json: true
-        }, function(err, response, json) {
+        }, (err, response, json) => {
             if (!err && response.statusCode === 200) {
                 callback(itemFactory.parseSitemap(json));
             } else {

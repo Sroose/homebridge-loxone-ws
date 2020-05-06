@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var HumiditySensorItem = function(widget,platform,homebridge) {
+const HumiditySensorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
@@ -27,7 +25,7 @@ HumiditySensorItem.prototype.callBack = function(value) {
 };
 
 HumiditySensorItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.HumiditySensor();
+    const otherService = new this.homebridge.hap.Service.HumiditySensor();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentRelativeHumidity)
         .on('get', this.getItemState.bind(this))

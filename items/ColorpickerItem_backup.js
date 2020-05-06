@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var ColorItem = function(widget,platform,homebridge) {
+const ColorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction; //to control a colorpicker, use the uuidAction
@@ -26,14 +24,14 @@ ColorItem.prototype.initListener = function() {
 // transform Loxone color temperature (expressed in Kelvins 2700-6500k to Homekit values 140-500)
 function loxoneToHomekitColorTemperature(ct, obj) {
 
-    var minCtLoxone = 2700;
-    var maxCtLoxone = 6500;
+    const minCtLoxone = 2700;
+    const maxCtLoxone = 6500;
 
-    var minCtHomekit = 153;
-    var maxCtHomekit = 500;
+    const minCtHomekit = 153;
+    const maxCtHomekit = 500;
 
-    var percent = 1 - ((ct - minCtLoxone) / (maxCtLoxone - minCtLoxone));
-    var newValue = Math.round(minCtHomekit + ((maxCtHomekit - minCtHomekit) * percent));
+    const percent = 1 - ((ct - minCtLoxone) / (maxCtLoxone - minCtLoxone));
+    const newValue = Math.round(minCtHomekit + ((maxCtHomekit - minCtHomekit) * percent));
 
     //obj.log('loxoneToHomekitColorTemperature - Loxone Value: ' + ct);
     //obj.log('loxoneToHomekitColorTemperature - Percent: ' + percent + '%');
@@ -45,14 +43,14 @@ function loxoneToHomekitColorTemperature(ct, obj) {
 // transform Homekit color temperature (expressed 140-500 to Loxone values expressed in Kelvins 2700-6500k)
 function homekitToLoxoneColorTemperature(ct, obj) {
 
-    var minCtLoxone = 2700;
-    var maxCtLoxone = 6500;
+    const minCtLoxone = 2700;
+    const maxCtLoxone = 6500;
 
-    var minCtHomekit = 153;
-    var maxCtHomekit = 500;
+    const minCtHomekit = 153;
+    const maxCtHomekit = 500;
 
-    var percent = 1 - ((ct - minCtHomekit) / (maxCtHomekit - minCtHomekit));
-    var newValue = Math.round(minCtLoxone + ((maxCtLoxone - minCtLoxone) * percent));
+    const percent = 1 - ((ct - minCtHomekit) / (maxCtHomekit - minCtHomekit));
+    const newValue = Math.round(minCtLoxone + ((maxCtLoxone - minCtLoxone) * percent));
 
     //obj.log('homekitToLoxoneColorTemperature - Homekit Value: ' + ct);
     //obj.log('homekitToLoxoneColorTemperature - Percent: ' + percent + '%');
@@ -73,31 +71,33 @@ function homekitToLoxoneColorTemperature(ct, obj) {
  * @return  Array           The HSL representation
  */
 function rgbToHsl(r, g, b) {
-  r /= 255, g /= 255, b /= 255;
+    r /= 255, g /= 255, b /= 255;
 
-  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, l = (max + min) / 2;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h;
+    let s;
+    const l = (max + min) / 2;
 
-  if (max == min) {
-    h = s = 0; // achromatic
-  } else {
-    var d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max == min) {
+      h = s = 0; // achromatic
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+
+      h /= 6;
     }
 
-    h /= 6;
-  }
-
-  return {
-        h : h,
-        s : s,
-        l : l
-    }
+    return {
+          h,
+          s,
+          l
+      };
 }
 
 /**
@@ -112,42 +112,43 @@ function rgbToHsl(r, g, b) {
  * @return  Array           The HSV representation
  */
 function rgbToHsv(r, g, b) {
-  r /= 255, g /= 255, b /= 255;
+    r /= 255, g /= 255, b /= 255;
 
-  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, v = max;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h;
+    let s;
+    const v = max;
 
-  var d = max - min;
-  s = max == 0 ? 0 : d / max;
+    const d = max - min;
+    s = max == 0 ? 0 : d / max;
 
-  if (max == min) {
-    h = 0; // achromatic
-  } else {
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+    if (max == min) {
+      h = 0; // achromatic
+    } else {
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+
+      h /= 6;
     }
 
-    h /= 6;
-  }
+    //return [ h, s, v ];
 
-  //return [ h, s, v ];
-
-  return {
-        h : h,
-        s : s,
-        v : v
-    }
-
+    return {
+          h,
+          s,
+          v
+      };
 }
 
 // From http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
 // Start with a temperature, in Kelvin, somewhere between 1000 and 40000.  (Other values may work,
 //  but I can't make any promises about the quality of the algorithm's estimates above 40000 K.)
 function colorTemperatureToRGB(kelvin){
-    var temp = kelvin / 100;
-    var red, green, blue;
+    const temp = kelvin / 100;
+    let red, green, blue;
 
     if( temp <= 66 ){ 
 
@@ -171,10 +172,10 @@ function colorTemperatureToRGB(kelvin){
     } else {
 
         red = temp - 60;
-        red = 329.698727446 * Math.pow(red, -0.1332047592);
+        red = 329.698727446 * (red ** -0.1332047592);
         
         green = temp - 60;
-        green = 288.1221695283 * Math.pow(green, -0.0755148492 );
+        green = 288.1221695283 * (green ** -0.0755148492);
 
         blue = 255;
 
@@ -196,23 +197,23 @@ function clamp( x, min, max ) {
 
 ColorItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
-    console.log("Got new state for Color: " + value);
+    console.log(`Got new state for Color: ${value}`);
 
     //incoming value is a HSV string that needs to be parsed
-    var m;
+    let m;
     if (m = value.match(/^\W*hsv?\(([^)]*)\)\W*$/i)) {
         var params = m[1].split(',');
-        var re = /^\s*(\d*)(\.\d+)?\s*$/;
-        var mH, mS, mV;
+        const re = /^\s*(\d*)(\.\d+)?\s*$/;
+        let mH, mS, mV;
         if (
             params.length >= 3 &&
             (mH = params[0].match(re)) &&
             (mS = params[1].match(re)) &&
             (mV = params[2].match(re))
         ) {
-            var h = parseFloat((mH[1] || '0') + (mH[2] || ''));
-            var s = parseFloat((mS[1] || '0') + (mS[2] || ''));
-            var v = parseFloat((mV[1] || '0') + (mV[2] || ''));
+            const h = parseFloat((mH[1] || '0') + (mH[2] || ''));
+            const s = parseFloat((mS[1] || '0') + (mS[2] || ''));
+            const v = parseFloat((mV[1] || '0') + (mV[2] || ''));
 
             this.lastsetmode = 'color';
 
@@ -243,15 +244,15 @@ ColorItem.prototype.callBack = function(value) {
         //this.log('');
         //this.log('CT (loxone)  : ' + parseInt(params[1]));
         //this.log('CT (homekit) : ' + this.colortemperature);
-        var rgb = colorTemperatureToRGB(parseInt(params[1]));
+        const rgb = colorTemperatureToRGB(parseInt(params[1]));
         //this.log('RGB          : ' + rgb.r + ' ' + rgb.g + ' ' + rgb.b);
-        var hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
 
-        var new_hue = parseInt(360 * hsv.h);
-        var new_sat = parseInt(hsv.s * 100);
+        const new_hue = parseInt(360 * hsv.h);
+        const new_sat = parseInt(hsv.s * 100);
 
         //this.log('HSV          : ' + hsv.h + ' ' + hsv.s + ' ' + hsv.v);
-        this.log('hue: ' + new_hue + ' sat: ' + new_sat);
+        this.log(`hue: ${new_hue} sat: ${new_sat}`);
         //this.log('');
 
         // TODO - update the color Hue and Sat variables here also, from formula of the color temp
@@ -290,7 +291,7 @@ ColorItem.prototype.callBack = function(value) {
 
 ColorItem.prototype.getOtherServices = function() {
 
-    var otherService = new this.homebridge.hap.Service.Lightbulb();
+    const otherService = new this.homebridge.hap.Service.Lightbulb();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemPowerState.bind(this))
@@ -342,7 +343,7 @@ ColorItem.prototype.getItemSaturationState = function(callback) {
 };
 
 ColorItem.prototype.setItemColorTemperatureState = function(value, callback) {
-    this.log('setItemColorTemperatureState: ' + value);
+    this.log(`setItemColorTemperatureState: ${value}`);
     this.lastsetmode = 'colortemperature';
     this.colortemperature = value;
     this.setColorState(callback);
@@ -362,14 +363,14 @@ ColorItem.prototype.setItemPowerState = function(value, callback) {
 };
 
 ColorItem.prototype.setItemHueState = function(value, callback) {
-    this.log('setItemHueState: ' + value);
+    this.log(`setItemHueState: ${value}`);
     this.lastsetmode = 'color';
     this.hue = parseInt(value);
     this.setColorState(callback);
 };
 
 ColorItem.prototype.setItemSaturationState = function(value, callback) {
-    this.log('setItemSaturationState: ' + value);
+    this.log(`setItemSaturationState: ${value}`);
     this.lastsetmode = 'color';
     this.saturation = parseInt(value);
     this.setColorState(callback);
@@ -385,17 +386,17 @@ ColorItem.prototype.setColorState = function(callback) {
     //compose hsv string
 
     //compose hsv or temp string
-    var command = '';
+    let command = '';
     if (this.lastsetmode == 'color') {
-        command = "hsv(" + this.hue + "," + this.saturation + "," + this.brightness + ")";
+        command = `hsv(${this.hue},${this.saturation},${this.brightness})`;
         
     } else if (this.lastsetmode == 'colortemperature') {
-        command = "temp(" + this.brightness + "," + homekitToLoxoneColorTemperature(this.colortemperature, this) + ")";
+        command = `temp(${this.brightness},${homekitToLoxoneColorTemperature(this.colortemperature, this)})`;
 
     }
 
     //var command = "hsv(" + this.hue + "," + this.saturation + "," + this.brightness + ")";
-    this.log("[color] iOS - send message to " + this.name + ' ' + command);
+    this.log(`[color] iOS - send message to ${this.name} ${command}`);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 };

@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var EventItem = function(widget,platform,homebridge) {
+const EventItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.stateUuid = widget.states.active; //an event always has a state called active, which is the uuid which will receive the event to read
@@ -26,7 +24,7 @@ EventItem.prototype.callBack = function(value) {
 };
 
 EventItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.StatelessProgrammableSwitch();
+    const otherService = new this.homebridge.hap.Service.StatelessProgrammableSwitch();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.ProgrammableSwitchEvent);
 
