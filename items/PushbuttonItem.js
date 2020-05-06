@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var PushbuttonItem = function(widget,platform,homebridge) {
+const PushbuttonItem = function(widget,platform,homebridge) {
     PushbuttonItem.super_.call(this, widget,platform,homebridge);
 };
 
@@ -20,20 +18,20 @@ PushbuttonItem.prototype.callBack = function(value) {
         .setValue(this.currentState == '1');
 
     //and then set state back to off, since pushbuttons don't keep states
-    setTimeout(function() {
+    setTimeout(() => {
         this.currentState = false;
         this.otherService
         .getCharacteristic(this.homebridge.hap.Characteristic.On)
         .setValue(false,
-            function() {
+            () => {
                 this.setFromLoxone = false;
-            }.bind(this)
+            }
         );
-    }.bind(this), 1000);
+    }, 1000);
 
 };
 
-PushbuttonItem.prototype.onCommand = function() {
+PushbuttonItem.prototype.onCommand = () => {
     //override On command
     return 'Pulse';
 };

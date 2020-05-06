@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var MotionSensorItem = function(widget,platform,homebridge) {
+const MotionSensorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
@@ -30,7 +28,7 @@ MotionSensorItem.prototype.callBack = function(value) {
 };
 
 MotionSensorItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.MotionSensor();
+    const otherService = new this.homebridge.hap.Service.MotionSensor();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.MotionDetected)
         .on('get', this.getItemState.bind(this))

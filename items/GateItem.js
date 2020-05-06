@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var GateItem = function(widget,platform,homebridge) {
+const GateItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
@@ -22,9 +20,9 @@ GateItem.prototype.initListener = function() {
 };
 
 GateItem.prototype.callBackActive = function(value) {
-    console.log("Got new state for GateActive: " + value);
+    console.log(`Got new state for GateActive: ${value}`);
 
-    var new_doorstate = this.currentdoorstate;
+    let new_doorstate = this.currentdoorstate;
     if (value == 1) {
         new_doorstate = this.homebridge.hap.Characteristic.CurrentDoorState.OPENING;
         //console.log('OPENING');
@@ -63,9 +61,9 @@ GateItem.prototype.callBackActive = function(value) {
 };
 
 GateItem.prototype.callBackPosition = function(value) {
-    console.log("Got new state for GatePosition: " + value);
+    console.log(`Got new state for GatePosition: ${value}`);
 
-    var new_doorstate = this.currentdoorstate;
+    let new_doorstate = this.currentdoorstate;
     if (value == 1) {
         new_doorstate = this.homebridge.hap.Characteristic.CurrentDoorState.OPEN;
         this.targetdoorstate = new_doorstate;
@@ -104,7 +102,7 @@ GateItem.prototype.callBackPosition = function(value) {
 
 GateItem.prototype.getOtherServices = function() {
 
-    var otherService = new this.homebridge.hap.Service.GarageDoorOpener();
+    const otherService = new this.homebridge.hap.Service.GarageDoorOpener();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentDoorState)
         .on('get', this.getCurrentDoorState.bind(this))
@@ -135,12 +133,12 @@ GateItem.prototype.setTargetDoorState = function(value, callback) {
 
     }
 
-    var command = 'open';
+    let command = 'open';
     if (this.targetdoorstate == this.homebridge.hap.Characteristic.CurrentDoorState.CLOSED) {
         command = 'close';
     } 
 
-    this.log("[gate] iOS - send message to " + this.name + ": " + command);
+    this.log(`[gate] iOS - send message to ${this.name}: ${command}`);
     this.platform.ws.sendCommand(this.uuidAction, command);
 
     callback();

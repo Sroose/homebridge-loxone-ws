@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var TimedSwitchItem = function(widget,platform,homebridge) {
+const TimedSwitchItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction; //to control a switch, use the uuidAction
@@ -37,7 +35,7 @@ TimedSwitchItem.prototype.callBack = function(value) {
 };
 
 TimedSwitchItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.Switch();
+    const otherService = new this.homebridge.hap.Service.Switch();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemState.bind(this))
@@ -59,7 +57,7 @@ TimedSwitchItem.prototype.setItemState = function(value, callback) {
 
 
 
-    var command = 0;
+    let command = 0;
     if (value == true) {
         //this.log('perm on ***');
         command = 'On';//-1; // perm on
@@ -71,7 +69,7 @@ TimedSwitchItem.prototype.setItemState = function(value, callback) {
     //this.log('setItemState value: ' + value);
     //this.log('setItemState command: ' + command);
 
-    this.log("[timedswitch] iOS - send message to " + this.name + ": " + command);
+    this.log(`[timedswitch] iOS - send message to ${this.name}: ${command}`);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 

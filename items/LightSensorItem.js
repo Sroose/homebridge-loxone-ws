@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var LightSensorItem = function(widget,platform,homebridge) {
+const LightSensorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
@@ -30,7 +28,7 @@ LightSensorItem.prototype.callBack = function(value) {
 };
 
 LightSensorItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.LightSensor();
+    const otherService = new this.homebridge.hap.Service.LightSensor();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentAmbientLightLevel)
         .on('get', this.getItemState.bind(this))

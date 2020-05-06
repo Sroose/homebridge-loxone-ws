@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var ColorItem = function(widget,platform,homebridge) {
+const ColorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction; //to control a colorpicker, use the uuidAction
@@ -26,20 +24,20 @@ ColorItem.prototype.callBack = function(value) {
     //console.log("Got new state for color " + value);
 
     //incoming value is a HSV string that needs to be parsed
-    var m;
+    let m;
     if (m = value.match(/^\W*hsv?\(([^)]*)\)\W*$/i)) {
         var params = m[1].split(',');
-        var re = /^\s*(\d*)(\.\d+)?\s*$/;
-        var mH, mS, mV;
+        const re = /^\s*(\d*)(\.\d+)?\s*$/;
+        let mH, mS, mV;
         if (
             params.length >= 3 &&
             (mH = params[0].match(re)) &&
             (mS = params[1].match(re)) &&
             (mV = params[2].match(re))
         ) {
-            var h = parseFloat((mH[1] || '0') + (mH[2] || ''));
-            var s = parseFloat((mS[1] || '0') + (mS[2] || ''));
-            var v = parseFloat((mV[1] || '0') + (mV[2] || ''));
+            const h = parseFloat((mH[1] || '0') + (mH[2] || ''));
+            const s = parseFloat((mS[1] || '0') + (mS[2] || ''));
+            const v = parseFloat((mV[1] || '0') + (mV[2] || ''));
 
             this.hue = parseInt(h);
             this.saturation = parseInt(s);
@@ -73,7 +71,7 @@ ColorItem.prototype.callBack = function(value) {
 
 ColorItem.prototype.getOtherServices = function() {
 
-    var otherService = new this.homebridge.hap.Service.Lightbulb();
+    const otherService = new this.homebridge.hap.Service.Lightbulb();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemPowerState.bind(this))
@@ -142,8 +140,8 @@ ColorItem.prototype.setItemBrightnessState = function(value, callback) {
 
 ColorItem.prototype.setColorState = function(callback) {
     //compose hsv string
-    var command = "hsv(" + this.hue + "," + this.saturation + "," + this.brightness + ")";
-    this.log("[color] iOS - send message to " + this.name + ": " + command);
+    const command = `hsv(${this.hue},${this.saturation},${this.brightness})`;
+    this.log(`[color] iOS - send message to ${this.name}: ${command}`);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 };

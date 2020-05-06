@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var SwitchItem = function(widget,platform,homebridge) {
+const SwitchItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction; //to control a switch, use the uuidAction
@@ -29,7 +27,7 @@ SwitchItem.prototype.callBack = function(value) {
 };
 
 SwitchItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.Switch();
+    const otherService = new this.homebridge.hap.Service.Switch();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemState.bind(this))
@@ -44,7 +42,7 @@ SwitchItem.prototype.getItemState = function(callback) {
     callback(undefined, this.currentState == '1');
 };
 
-SwitchItem.prototype.onCommand = function() {
+SwitchItem.prototype.onCommand = () => {
     //function to set the command to be used for On
     //for a switch, this is 'On', but subclasses can override this to eg Pulse
     return 'On';
@@ -55,10 +53,10 @@ SwitchItem.prototype.setItemState = function(value, callback) {
     //sending new state to loxone
     //added some logic to prevent a loop when the change because of external event captured by callback
 
-    var self = this;
+    const self = this;
 	
-    var command = (value == '1') ? this.onCommand() : 'Off';
-    this.log("[switch] iOS - send message to " + this.name + ": " + command);
+    const command = (value == '1') ? this.onCommand() : 'Off';
+    this.log(`[switch] iOS - send message to ${this.name}: ${command}`);
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 

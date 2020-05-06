@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var LightControllerV2MoodSwitchItem = function(widget,platform,homebridge) {
+const LightControllerV2MoodSwitchItem = function(widget,platform,homebridge) {
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
     this.stateUuidActiveMoods = widget.states.activeMoods;
@@ -29,7 +27,7 @@ LightControllerV2MoodSwitchItem.prototype.callBackActiveMoods = function(value) 
 };
 
 LightControllerV2MoodSwitchItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.Switch();
+    const otherService = new this.homebridge.hap.Service.Switch();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemState.bind(this))
@@ -51,7 +49,7 @@ LightControllerV2MoodSwitchItem.prototype.setItemState = function(value, callbac
             .updateValue(this.currentState);
 
         // send the mood change command to Loxone
-        var command = 'changeTo/' + this.mood.id;
+        const command = `changeTo/${this.mood.id}`;
         //this.log("[LightControllerV2MoodSwitch] Send message to " + this.name + "uuidAction: '" + this.uuidActionOriginal + "' Command: '" + command + "'");
         this.platform.ws.sendCommand(this.uuidActionOriginal, command);
 
