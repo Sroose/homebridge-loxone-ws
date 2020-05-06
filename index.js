@@ -1,11 +1,13 @@
-var Homebridge, Accessory;
-const request = require("request");
-const ItemFactory = require('./libs/ItemFactory.js');
-const Utility = require('./libs/Utility.js');
-const WSListener = require('./libs/WSListener.js');
+'use strict';
 
-module.exports = homebridge => {
-    console.log(`homebridge API version: ${homebridge.version}`);
+var Homebridge, Accessory;
+var request = require("request");
+var ItemFactory = require('./libs/ItemFactory.js');
+var Utility = require('./libs/Utility.js');
+var WSListener = require('./libs/WSListener.js');
+
+module.exports = function(homebridge) {
+    console.log("homebridge API version: " + homebridge.version);
 
     // Accessory must be created from PlatformAccessory Constructor
     Accessory = homebridge.platformAccessory;
@@ -39,7 +41,7 @@ module.exports = homebridge => {
 // config may be null
 function LoxPlatform(log, config) {
     //log("LoxPlatform Init");
-    const platform = this;
+    var platform = this;
     this.log = log;
     this.config = config;
     this.protocol = "http";
@@ -71,17 +73,17 @@ function LoxPlatform(log, config) {
 }
 
 LoxPlatform.prototype.accessories = function(callback) {
-    const that = this;
+    var that = this;
     //this.log("Getting Loxone configuration.");
-    const itemFactory = new ItemFactory.Factory(this,Homebridge);
-    const url = itemFactory.sitemapUrl();
+    var itemFactory = new ItemFactory.Factory(this,Homebridge);
+    var url = itemFactory.sitemapUrl();
     this.log("Platform - Waiting 8 seconds until initial state is retrieved via WebSocket.");
-    setTimeout(() => {
-        that.log(`Platform - Retrieving initial config from ${url}`);
+    setTimeout(function(){
+        that.log("Platform - Retrieving initial config from " + url);
         request.get({
-            url,
+            url: url,
             json: true
-        }, (err, response, json) => {
+        }, function(err, response, json) {
             if (!err && response.statusCode === 200) {
                 callback(itemFactory.parseSitemap(json));
             } else {
@@ -90,7 +92,3 @@ LoxPlatform.prototype.accessories = function(callback) {
         })
     },8000);
 };
-
-
-
-
