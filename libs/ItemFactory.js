@@ -1,24 +1,24 @@
-const exports = module.exports = {};
-exports.AbstractItem = require('../items/AbstractItem.js');
+const moduleexports = module.exports = {};
+moduleexports.AbstractItem = require('../items/AbstractItem.js');
 //Important: name the exports identical to Loxone type to have an automatic match
 //If not possible, define in checkCustomAttrs which will override in certain cases
-exports.LightControllerV2MoodSwitch = require('../items/LightControllerV2MoodSwitchItem.js');
-exports.TemperatureSensor = require('../items/TemperatureSensorItem.js');
-exports.HumiditySensor = require('../items/HumiditySensorItem.js');
-exports.Switch = require('../items/SwitchItem.js');
-exports.TimedSwitch = require('../items/TimedSwitchItem.js');
-exports.Lightbulb = require('../items/LightbulbItem.js');
-exports.Dimmer = require('../items/DimmerItem.js');
-exports.Jalousie = require('../items/BlindsItem.js');
-exports.Pushbutton = require('../items/PushbuttonItem.js');
-exports.Colorpicker = require('../items/ColorpickerItem.js');
-exports.Gate = require('../items/GateItem.js');
-exports.DoorBell = require('../items/DoorBellItem.js');
-exports.MotionSensor = require('../items/MotionSensorItem.js');
-exports.ContactSensor = require('../items/ContactSensorItem.js');
-exports.LightSensor = require('../items/LightSensorItem.js');
+moduleexports.LightControllerV2MoodSwitch = require('../items/LightControllerV2MoodSwitchItem.js');
+moduleexports.TemperatureSensor = require('../items/TemperatureSensorItem.js');
+moduleexports.HumiditySensor = require('../items/HumiditySensorItem.js');
+moduleexports.Switch = require('../items/SwitchItem.js');
+moduleexports.TimedSwitch = require('../items/TimedSwitchItem.js');
+moduleexports.Lightbulb = require('../items/LightbulbItem.js');
+moduleexports.Dimmer = require('../items/DimmerItem.js');
+moduleexports.Jalousie = require('../items/BlindsItem.js');
+moduleexports.Pushbutton = require('../items/PushbuttonItem.js');
+moduleexports.Colorpicker = require('../items/ColorpickerItem.js');
+moduleexports.Gate = require('../items/GateItem.js');
+moduleexports.DoorBell = require('../items/DoorBellItem.js');
+moduleexports.MotionSensor = require('../items/MotionSensorItem.js');
+moduleexports.ContactSensor = require('../items/ContactSensorItem.js');
+moduleexports.LightSensor = require('../items/LightSensorItem.js');
 
-exports.Factory = function(LoxPlatform, homebridge) {
+moduleexports.Factory = function(LoxPlatform, homebridge) {
     this.platform = LoxPlatform;
     this.log = this.platform.log;
     this.homebridge = homebridge;
@@ -30,7 +30,7 @@ exports.Factory = function(LoxPlatform, homebridge) {
 
 //TODO: we could also get this information from the websocket, avoiding the need of an extra request.
 
-exports.Factory.prototype.sitemapUrl = function() {
+moduleexports.Factory.prototype.sitemapUrl = function() {
     let serverString = this.platform.host;
     const serverPort = this.platform.port;
     if (this.platform.username && this.platform.password) {
@@ -40,18 +40,18 @@ exports.Factory.prototype.sitemapUrl = function() {
     return `${this.platform.protocol}://${serverString}/data/LoxApp3.json`;
 };
 
-exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
+moduleexports.Factory.prototype.parseSitemap = function(jsonSitemap) {
 
     //this is the function that gets called by index.js
     //first, parse the Loxone JSON that holds all controls
-    exports.Factory.prototype.traverseSitemap(jsonSitemap, this);
+    moduleexports.Factory.prototype.traverseSitemap(jsonSitemap, this);
     //now convert these controls in accessories
     const accessoryList = [];
 
     for (const key in this.itemList) {
         if (this.itemList.hasOwnProperty(key)) {
             //process additional attributes
-            this.itemList[key] = exports.Factory.prototype.checkCustomAttrs(this, key, this.platform, this.catList);
+            this.itemList[key] = moduleexports.Factory.prototype.checkCustomAttrs(this, key, this.platform, this.catList);
 
             if (!(this.itemList[key].type in exports)){
                 this.log(`Platform - The widget '${this.itemList[key].name}' of type ${this.itemList[key].type} is an item not handled.`);
@@ -118,7 +118,7 @@ exports.Factory.prototype.parseSitemap = function(jsonSitemap) {
 };
 
 
-exports.Factory.prototype.checkCustomAttrs = (factory, itemId, platform, catList) => {
+moduleexports.Factory.prototype.checkCustomAttrs = (factory, itemId, platform, catList) => {
     const item = factory.itemList[itemId];
     //this function will make accesories more precise based on other attributes
     //eg, all InfoOnlyAnalog items which start with the name 'Temperat' are considered temperature sensors
@@ -200,7 +200,7 @@ exports.Factory.prototype.checkCustomAttrs = (factory, itemId, platform, catList
 };
 
 
-exports.Factory.prototype.traverseSitemap = (jsonSitmap, factory) => {
+moduleexports.Factory.prototype.traverseSitemap = (jsonSitmap, factory) => {
 
     //this function will simply add every control and subControl to the itemList, holding all its information
     //it will also store category information, as we will use this to decide on correct Item Type

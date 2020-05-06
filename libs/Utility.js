@@ -1,7 +1,7 @@
 const inherits = require("util").inherits;
-const exports = module.exports = {};
+const moduleexports = module.exports = {};
 
-exports.addInheritance = (subclass, superclass) => {
+moduleexports.addInheritance = (subclass, superclass) => {
     const proto = subclass.prototype;
     inherits(subclass, superclass);
     subclass.prototype.parent = superclass.prototype;
@@ -10,6 +10,6 @@ exports.addInheritance = (subclass, superclass) => {
     }
 };
 
-exports.addSupportTo = (subclass, superclass) => {
-    exports.addInheritance(subclass,superclass);
+moduleexports.addSupportTo = (subclass, superclass) => {
+    moduleexports.addInheritance(subclass,superclass);
 };
