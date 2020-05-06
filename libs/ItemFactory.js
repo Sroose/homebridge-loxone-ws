@@ -53,7 +53,7 @@ moduleexports.Factory.prototype.parseSitemap = function(jsonSitemap) {
             //process additional attributes
             this.itemList[key] = moduleexports.Factory.prototype.checkCustomAttrs(this, key, this.platform, this.catList);
 
-            if (!(this.itemList[key].type in exports)){
+            if (!(this.itemList[key].type in moduleexports)){
                 this.log(`Platform - The widget '${this.itemList[key].name}' of type ${this.itemList[key].type} is an item not handled.`);
                 continue;
             }
@@ -62,7 +62,7 @@ moduleexports.Factory.prototype.parseSitemap = function(jsonSitemap) {
                 continue;
             }
 
-            const accessory = new exports[this.itemList[key].type](this.itemList[key], this.platform, this.homebridge);
+            const accessory = new moduleexports[this.itemList[key].type](this.itemList[key], this.platform, this.homebridge);
             this.log(`Platform - Accessory Found: ${this.itemList[key].name}`);
 
             if (accessoryList.length > 99) {
