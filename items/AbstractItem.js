@@ -17,7 +17,8 @@ const AbstractItem = function(widget,platform,homebridge) {
 	// console.log("Generating new homebridge accessory '" + this.name + "' with UUID: " + this.UUID + " from accessory with ID: " + widget.uuidAction);
 
     //Add as ACCESSORY (parent class)
-    AbstractItem.super_.call(this, this.name, this.UUID);
+    //AbstractItem.super_.call(this, this.name, this.UUID);
+    new homebridge.platformAccessory(this.name, this.UUID);
 
 };
 
