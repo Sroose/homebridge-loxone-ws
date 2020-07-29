@@ -16,18 +16,9 @@ module.exports = homebridge => {
     //Add inheritance of the AbstractItem to the Accessory object
     Utility.addSupportTo(ItemFactory.AbstractItem, Accessory);
         //All other items are child of the abstractItem
-        Utility.addSupportTo(ItemFactory.LightControllerV2MoodSwitch, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.TemperatureSensor, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.HumiditySensor, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.MotionSensor, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.ContactSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.LightSensor, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Dimmer, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.Colorpicker, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.Gate, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.DoorBell, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.Jalousie, ItemFactory.AbstractItem);
-		Utility.addSupportTo(ItemFactory.TimedSwitch, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Switch, ItemFactory.AbstractItem);
             //Add childs of switch
             Utility.addSupportTo(ItemFactory.Lightbulb, ItemFactory.Switch);
@@ -48,23 +39,11 @@ function LoxPlatform(log, config) {
     if (!this.config['port']) throw new Error("Configuration missing: loxone port (if default port, specify 7777)");
     if (!this.config['username']) throw new Error("Configuration missing: loxone username");
     if (!this.config['password']) throw new Error("Configuration missing: loxone password");
-    if (!this.config['rooms']) this.log("Info: rooms array not configured. Adding every room.");
 
     this.host           = config["host"];
     this.port           = config["port"];
     this.username       = config["username"];
     this.password       = config["password"];
-	if (this.config['rooms']) {
-        this.rooms = config["rooms"];
-    } else {
-        this.rooms =[];
-    } 
-	this.log(typeof this.rooms);
-    if (this.config['moodSwitches']) {
-        this.moodSwitches = config["moodSwitches"];
-    } else {
-        this.moodSwitches = 'none';
-    } 
 
     //Also make a WS connection
     this.ws = new WSListener(platform);
@@ -90,7 +69,3 @@ LoxPlatform.prototype.accessories = function(callback) {
         })
     },8000);
 };
-
-
-
-
