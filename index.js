@@ -17,12 +17,9 @@ module.exports = homebridge => {
     Utility.addSupportTo(ItemFactory.AbstractItem, Accessory);
         //All other items are child of the abstractItem
         Utility.addSupportTo(ItemFactory.TemperatureSensor, ItemFactory.AbstractItem);
-        Utility.addSupportTo(ItemFactory.LightSensor, ItemFactory.AbstractItem);
+        Utility.addSupportTo(ItemFactory.Outlet, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Dimmer, ItemFactory.AbstractItem);
         Utility.addSupportTo(ItemFactory.Switch, ItemFactory.AbstractItem);
-            //Add childs of switch
-            Utility.addSupportTo(ItemFactory.Lightbulb, ItemFactory.Switch);
-            Utility.addSupportTo(ItemFactory.Pushbutton, ItemFactory.Switch);
     homebridge.registerPlatform("homebridge-loxoneWs", "LoxoneWs", LoxPlatform);
 };
 

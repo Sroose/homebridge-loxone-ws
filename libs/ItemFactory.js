@@ -2,9 +2,10 @@ const moduleexports = module.exports = {};
 moduleexports.AbstractItem = require('../items/AbstractItem.js');
 //Important: name the exports identical to Loxone type to have an automatic match
 //If not possible, define in checkCustomAttrs which will override in certain cases
+moduleexports.TemperatureSensor = require('../items/TemperatureSensorItem.js');
 moduleexports.Switch = require('../items/SwitchItem.js');
-moduleexports.Lightbulb = require('../items/LightbulbItem.js');
 moduleexports.Outlet = require('../items/Outlet.js');
+moduleexports.Dimmer = require('../items/DimmerItem.js');
 
 moduleexports.Factory = function(LoxPlatform, homebridge) {
     this.platform = LoxPlatform;
@@ -69,7 +70,7 @@ moduleexports.Factory.prototype.checkCustomAttrs = (factory, itemId, platform, c
     if (item.name.startsWith('Temperat')) {
         item.type = "TemperatureSensor";
 
-    } if (item.name.indexOf('Steckd') !== -1) {
+    } if (item.name.startsWith('Steckdose')) {
         item.type = "Outlet";
 
     }

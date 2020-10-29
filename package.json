@@ -1,12 +1,46 @@
 {
-  "name": "homebridge-loxone-ws-adv-cstm",
-  "version": "1.1.0",
-  "description": "Websocket based Loxone plugin for homebridge advanced version (https://github.com/nfarina/homebridge)",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ChristianKlee/homebridge-loxone-ws-adv.git"
+  "_from": "homebridge-loxone-ws-adv-cstm@^1.1.14",
+  "_id": "homebridge-loxone-ws-adv-cstm@1.1.14",
+  "_inBundle": false,
+  "_integrity": "sha512-8PPPeW/tuJ7mIEhDTE/ieuR/zgYHuxgUoPlcHJ5Nu8Nxsx3o1b+mHGK7CMCdvebd/HjHDuH7Sto1TNKmvqofHQ==",
+  "_location": "/homebridge-loxone-ws-adv-cstm",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "homebridge-loxone-ws-adv-cstm@^1.1.14",
+    "name": "homebridge-loxone-ws-adv-cstm",
+    "escapedName": "homebridge-loxone-ws-adv-cstm",
+    "rawSpec": "^1.1.14",
+    "saveSpec": null,
+    "fetchSpec": "^1.1.14"
   },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/homebridge-loxone-ws-adv-cstm/-/homebridge-loxone-ws-adv-cstm-1.1.14.tgz",
+  "_shasum": "3a9514576487143e457e594aef4853d690a648ff",
+  "_spec": "homebridge-loxone-ws-adv-cstm@^1.1.14",
+  "_where": "/homebridge",
+  "author": {
+    "name": "Christian Klee"
+  },
+  "bugs": {
+    "url": "https://github.com/ChristianKlee/homebridge-loxone-ws-adv/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "node-lox-ws-api": "^0.4.3",
+    "request": "^2.83.0",
+    "ws": "^3.3.3"
+  },
+  "deprecated": false,
+  "description": "Websocket based Loxone plugin for homebridge advanced version (https://github.com/nfarina/homebridge)",
+  "engines": {
+    "homebridge": ">=0.2.0",
+    "node": ">=0.12.0"
+  },
+  "homepage": "https://github.com/ChristianKlee/homebridge-loxone-ws-adv#readme",
   "keywords": [
     "Loxone",
     "homebridge",
@@ -15,19 +49,12 @@
     "HomeKit",
     "iOS"
   ],
-  "author": "Christian Klee",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ChristianKlee/homebridge-loxone-ws-adv/issues"
+  "main": "index.js",
+  "name": "homebridge-loxone-ws-adv-cstm",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristianKlee/homebridge-loxone-ws-adv.git"
   },
-  "engines": {
-    "node": ">=0.12.0",
-    "homebridge": ">=0.2.0"
-  },
-  "dependencies": {
-    "node-lox-ws-api": "^0.4.3",
-    "request": "^2.83.0",
-    "ws": "^3.3.3"
-  },
-  "homepage": "https://github.com/ChristianKlee/homebridge-loxone-ws-adv#readme"
+  "version": "1.1.14"
 }
