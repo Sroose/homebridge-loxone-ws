@@ -2,6 +2,7 @@ const moduleexports = module.exports = {};
 moduleexports.AbstractItem = require('../items/AbstractItem.js');
 //Important: name the exports identical to Loxone type to have an automatic match
 //If not possible, define in checkCustomAttrs which will override in certain cases
+moduleexports.Jalousie = require('../items/BlindsItem.js');
 moduleexports.TemperatureSensor = require('../items/TemperatureSensorItem.js');
 moduleexports.Switch = require('../items/SwitchItem.js');
 moduleexports.Outlet = require('../items/Outlet.js');
@@ -67,10 +68,10 @@ moduleexports.Factory.prototype.checkCustomAttrs = (factory, itemId, platform, c
     //this function will make accesories more precise based on other attributes
     //eg, all InfoOnlyAnalog items which start with the name 'Temperat' are considered temperature sensors
 
-    if (item.name.startsWith('Temperat')) {
+    if (item.name.includes('Temperat')) {
         item.type = "TemperatureSensor";
 
-    } if (item.name.startsWith('Steckdose')) {
+    } if (item.name.includes('Steckdose')) {
         item.type = "Outlet";
 
     }
