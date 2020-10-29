@@ -56,5 +56,5 @@
     "type": "git",
     "url": "git+https://github.com/ChristianKlee/homebridge-loxone-ws-adv.git"
   },
-  "version": "1.1.15"
+  "version": "1.2.0"
 }
