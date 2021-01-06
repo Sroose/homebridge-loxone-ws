@@ -28,6 +28,10 @@ TemperatureSensorItem.prototype.getOtherServices = function() {
     const otherService = new this.homebridge.hap.Service.TemperatureSensor();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
+        .setProps({
+            minValue: -1000,
+            maxValue: 1000
+        })
         .on('get', this.getItemState.bind(this))
         .setValue(this.currentTemperature);
 
