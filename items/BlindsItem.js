@@ -130,18 +130,20 @@ BlindsItem.prototype.setItem = function(value, callback) {
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 
-    setTimeout(function(){
-        if(!self.gotCallBack) {
-            var command = 0;
-            if (typeof value === 'boolean') {
-                command = value ? 'FullUp' : 'FullDown';
-            } else {
-                //reverse again the value
-                command = "ManualPosition/" + (100 - value - 1);
+    if(this.targetPosition != this.startedPosition) {
+        setTimeout(function(){
+            if(!self.gotCallBack) {
+                var command = 0;
+                if (typeof value === 'boolean') {
+                    command = value ? 'FullUp' : 'FullDown';
+                } else {
+                    //reverse again the value
+                    command = "ManualPosition/" + (100 - value - 1);
+                }
+                self.platform.ws.sendCommand(self.uuidAction, command); 
             }
-            self.platform.ws.sendCommand(self.uuidAction, command); 
-        }
-    }, 3000);
+        }, 3000);
+    }
 };
 
 module.exports = BlindsItem;

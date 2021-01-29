@@ -1,26 +1,27 @@
 {
-  "_from": "homebridge-loxone-ws-adv-cstm@^1.1.14",
-  "_id": "homebridge-loxone-ws-adv-cstm@1.1.14",
+  "_from": "homebridge-loxone-ws-adv-cstm@latest",
+  "_id": "homebridge-loxone-ws-adv-cstm@1.3.0",
   "_inBundle": false,
-  "_integrity": "sha512-8PPPeW/tuJ7mIEhDTE/ieuR/zgYHuxgUoPlcHJ5Nu8Nxsx3o1b+mHGK7CMCdvebd/HjHDuH7Sto1TNKmvqofHQ==",
+  "_integrity": "sha512-bgqcIMHxW7cgp3zDMO9zvr+ncCExF9ygO7jUcn5qLbRe3kP/lcr4XnUIl7/9Vi26RfgBX7PBGKnN6BQHqkI6CA==",
   "_location": "/homebridge-loxone-ws-adv-cstm",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "tag",
     "registry": true,
-    "raw": "homebridge-loxone-ws-adv-cstm@^1.1.14",
+    "raw": "homebridge-loxone-ws-adv-cstm@latest",
     "name": "homebridge-loxone-ws-adv-cstm",
     "escapedName": "homebridge-loxone-ws-adv-cstm",
-    "rawSpec": "^1.1.14",
+    "rawSpec": "latest",
     "saveSpec": null,
-    "fetchSpec": "^1.1.14"
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
+    "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/homebridge-loxone-ws-adv-cstm/-/homebridge-loxone-ws-adv-cstm-1.1.14.tgz",
-  "_shasum": "3a9514576487143e457e594aef4853d690a648ff",
-  "_spec": "homebridge-loxone-ws-adv-cstm@^1.1.14",
+  "_resolved": "https://registry.npmjs.org/homebridge-loxone-ws-adv-cstm/-/homebridge-loxone-ws-adv-cstm-1.3.0.tgz",
+  "_shasum": "00e41b16fc13e372e5e7d04ac4c3b97fe4f04a56",
+  "_spec": "homebridge-loxone-ws-adv-cstm@latest",
   "_where": "/homebridge",
   "author": {
     "name": "Christian Klee"
@@ -56,5 +57,5 @@
     "type": "git",
     "url": "git+https://github.com/ChristianKlee/homebridge-loxone-ws-adv.git"
   },
-  "version": "1.2.0"
+  "version": "1.3.0"
 }
