@@ -1,4 +1,4 @@
-# homebridge-loxone-ws
+# homebridge-loxone-ws-adv
 Websocket based Loxone plugin for homebridge
 
 This is a Loxone plugin for [Homebridge](https://github.com/nfarina/homebridge)
@@ -26,11 +26,11 @@ Follow all the installation steps there.
 Install the plugin through npm or download the files from here.
 
 ```sh
-$ sudo npm install -g homebridge-loxone-ws
+$ sudo npm install -g homebridge-loxone-ws-adv
 ```
 Or update to latest version when already installed:
 ```sh
-$ sudo npm update -g homebridge-loxone-ws
+$ sudo npm update -g homebridge-loxone-ws-adv
 ```
 
 Note: the plugin requires extra node modules, but these should be automatically installed:
@@ -124,6 +124,8 @@ The plugin is released under MIT license, which means you can do whatever you wa
 
 Credits
 ----
+The original Loxone WS work was done by [Sroose](https://github.com/Sroose/homebridge-loxone-ws)
+
 Attribution goes towards [Tommaso Marchionni](https://github.com/tommasomarchionni). The structure of this code is based on his [openHAB plugin](https://github.com/tommasomarchionni/homebridge-openHAB).
 
 The original HomeKit API work was done by [Khaos Tian](https://github.com/KhaosT) in his [HAP-NodeJS](https://github.com/KhaosT/HAP-NodeJS) project.

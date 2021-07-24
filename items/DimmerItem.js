@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var DimmerItem = function(widget,platform,homebridge) {
+const DimmerItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction; //to control a dimmer, use the uuidAction
@@ -20,7 +18,7 @@ DimmerItem.prototype.initListener = function() {
 DimmerItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
     //console.log("Got new state for dimmer " + value);
-    this.currentState = value;
+    this.currentState = value * 10;
 
     //also make sure this change is directly communicated to HomeKit
     this.otherService
@@ -33,7 +31,7 @@ DimmerItem.prototype.callBack = function(value) {
 
 DimmerItem.prototype.getOtherServices = function() {
 
-    var otherService = new this.homebridge.hap.Service.Lightbulb();
+    const otherService = new this.homebridge.hap.Service.Lightbulb();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.On)
         .on('set', this.setItemPowerState.bind(this))
@@ -63,10 +61,10 @@ DimmerItem.prototype.setItemState = function(value, callback) {
     //sending new state (brighness) to loxone
     //added some logic to prevent a loop when the change because of external event captured by callback
 
-    var self = this;
+    const self = this;
 
-    this.log("[dimmer] iOS - send brightness message to " + this.name + ": " + value);
-    var command = value; //Loxone expects a value between 0 and 100
+    this.log(`[dimmer] iOS - send brightness message to ${this.name}: ${value}`);
+    const command = value / 10; //Loxone expects a value between 0 and 100
     if (typeof this.platform.ws != 'undefined') {
       this.platform.ws.sendCommand(this.uuidAction, command);
     }
@@ -79,11 +77,11 @@ DimmerItem.prototype.setItemPowerState = function(value, callback) {
     //sending new state (on/off) to loxone
     //added some logic to prevent a loop when the change because of external event captured by callback
 
-    var self = this;
+    const self = this;
 
 
-    this.log("[dimmer] iOS - send on/off message to " + this.name + ": " + value);
-    var command = (value == '1') ? 'On' : 'Off';
+    this.log(`[dimmer] iOS - send on/off message to ${this.name}: ${value}`);
+    const command = (value == '1') ? 'On' : 'Off';
     if (typeof this.platform.ws != 'undefined') {
       this.platform.ws.sendCommand(this.uuidAction, command);
     }

@@ -1,8 +1,6 @@
-"use strict";
+const request = require("request");
 
-var request = require("request");
-
-var TemperatureSensorItem = function(widget,platform,homebridge) {
+const TemperatureSensorItem = function(widget,platform,homebridge) {
 
     this.platform = platform;
     this.uuidAction = widget.uuidAction;
@@ -27,9 +25,13 @@ TemperatureSensorItem.prototype.callBack = function(value) {
 };
 
 TemperatureSensorItem.prototype.getOtherServices = function() {
-    var otherService = new this.homebridge.hap.Service.TemperatureSensor();
+    const otherService = new this.homebridge.hap.Service.TemperatureSensor();
 
     otherService.getCharacteristic(this.homebridge.hap.Characteristic.CurrentTemperature)
+        .setProps({
+            minValue: -1000,
+            maxValue: 1000
+        })
         .on('get', this.getItemState.bind(this))
         .setValue(this.currentTemperature);
 

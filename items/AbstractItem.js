@@ -1,8 +1,6 @@
-"use strict";
+const WSListener = require('../libs/WSListener.js');
 
-var WSListener = require('../libs/WSListener.js');
-
-var AbstractItem = function(widget,platform,homebridge) {
+const AbstractItem = function(widget,platform,homebridge) {
     this.platform = platform;
     this.widget =  widget;
     this.homebridge = homebridge;
@@ -19,7 +17,8 @@ var AbstractItem = function(widget,platform,homebridge) {
 	// console.log("Generating new homebridge accessory '" + this.name + "' with UUID: " + this.UUID + " from accessory with ID: " + widget.uuidAction);
 
     //Add as ACCESSORY (parent class)
-    AbstractItem.super_.call(this, this.name, this.UUID);
+    //AbstractItem.super_.call(this, this.name, this.UUID);
+    new homebridge.platformAccessory(this.name, this.UUID);
 
 };
 
@@ -30,12 +29,12 @@ AbstractItem.prototype.getServices = function() {
     return [this.informationService, this.otherService];
 };
 
-AbstractItem.prototype.getOtherServices = function() {
+AbstractItem.prototype.getOtherServices = () => {
     return null;
 };
 
 AbstractItem.prototype.getInformationServices = function() {
-    var informationService = new this.homebridge.hap.Service.AccessoryInformation();
+    const informationService = new this.homebridge.hap.Service.AccessoryInformation();
 
     informationService
         .setCharacteristic(this.homebridge.hap.Characteristic.Manufacturer, 'Loxone')
