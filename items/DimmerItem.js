@@ -18,7 +18,7 @@ DimmerItem.prototype.initListener = function() {
 DimmerItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
     //console.log("Got new state for dimmer " + value);
-    this.currentState = value;
+    this.currentState = value * 10;
 
     //also make sure this change is directly communicated to HomeKit
     this.otherService
@@ -64,7 +64,7 @@ DimmerItem.prototype.setItemState = function(value, callback) {
     const self = this;
 
     this.log(`[dimmer] iOS - send brightness message to ${this.name}: ${value}`);
-    const command = value; //Loxone expects a value between 0 and 100
+    const command = value / 10; //Loxone expects a value between 0 and 100
     if (typeof this.platform.ws != 'undefined') {
       this.platform.ws.sendCommand(this.uuidAction, command);
     }

@@ -16,6 +16,8 @@ const BlindsItem = function(widget,platform,homebridge) {
     BlindsItem.super_.call(this, widget,platform,homebridge);
 
     this.positionState = this.homebridge.hap.Characteristic.PositionState.STOPPED;
+
+    this.gotCallBack = false;
 };
 
 // Register a listener to be notified of changes in this items value
@@ -26,6 +28,7 @@ BlindsItem.prototype.initListener = function() {
 BlindsItem.prototype.callBack = function(value) {
     //function that gets called by the registered ws listener
     //console.log("Got new state for blind " + value);
+    this.gotCallBack = true
 
     //incomign values from blinds are decimal (0 - 1)
     value *= 100;
@@ -103,6 +106,8 @@ BlindsItem.prototype.getItemCurrentPosition = function(callback) {
 
 BlindsItem.prototype.setItem = function(value, callback) {
 
+    this.gotCallBack = false;
+
     //sending new state (pct closed) to loxone
     const self = this;
 
@@ -125,6 +130,20 @@ BlindsItem.prototype.setItem = function(value, callback) {
     this.platform.ws.sendCommand(this.uuidAction, command);
     callback();
 
+    if(this.targetPosition != this.startedPosition) {
+        setTimeout(function(){
+            if(!self.gotCallBack) {
+                var command = 0;
+                if (typeof value === 'boolean') {
+                    command = value ? 'FullUp' : 'FullDown';
+                } else {
+                    //reverse again the value
+                    command = "ManualPosition/" + (100 - value - 1);
+                }
+                self.platform.ws.sendCommand(self.uuidAction, command); 
+            }
+        }, 3000);
+    }
 };
 
 module.exports = BlindsItem;
